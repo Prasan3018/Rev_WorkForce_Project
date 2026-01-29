@@ -14,4 +14,20 @@ public class ManagerService {
     public boolean approveOrRejectLeave(int leaveId, String status) {
         return leaveDAO.updateLeaveStatus(leaveId, status);
     }
+    
+    public void sendNotification(int empId, String message) {
+        leaveDAO.addNotification(empId, message);
+    }
+    
+    public ResultSet viewSubmittedReviews(int managerId) {
+        return leaveDAO.getSubmittedReviews(managerId);
+    }
+
+    public boolean giveFeedback(int reviewId,
+            String feedback, int rating) {
+
+        return leaveDAO.addManagerFeedback(reviewId, feedback, rating);
+    }
+
+
 }

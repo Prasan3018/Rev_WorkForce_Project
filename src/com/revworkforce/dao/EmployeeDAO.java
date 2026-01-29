@@ -35,6 +35,7 @@ public class EmployeeDAO {
                 emp.setRole(rs.getString("ROLE"));
                 emp.setPhone(rs.getString("PHONE"));
                 emp.setAddress(rs.getString("ADDRESS"));
+                emp.setEmergencyContact(rs.getString("EMERGENCY_CONTACT"));
                 emp.setManagerId(rs.getInt("MANAGER_ID"));
                 emp.setStatus(rs.getString("STATUS"));
             }
@@ -68,6 +69,7 @@ public class EmployeeDAO {
                 emp.setRole(rs.getString("ROLE"));
                 emp.setPhone(rs.getString("PHONE"));
                 emp.setAddress(rs.getString("ADDRESS"));
+                emp.setEmergencyContact(rs.getString("EMERGENCY_CONTACT"));
                 emp.setManagerId(rs.getInt("MANAGER_ID"));
                 emp.setStatus(rs.getString("STATUS"));
             }
@@ -79,7 +81,7 @@ public class EmployeeDAO {
         return emp;
     }
 
-    public boolean updateProfile(int empId, String phone, String address) {
+    public boolean updateProfile(Employee emp) {
 
         boolean updated = false;
 
@@ -87,12 +89,13 @@ public class EmployeeDAO {
             Connection con = DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
-                "UPDATE EMPLOYEE SET PHONE=?, ADDRESS=? WHERE EMP_ID=?"
+                "UPDATE EMPLOYEE SET PHONE=?, ADDRESS=?, EMERGENCY_CONTACT=? WHERE EMP_ID=?"
             );
 
-            ps.setString(1, phone);
-            ps.setString(2, address);
-            ps.setInt(3, empId);
+            ps.setString(1, emp.getPhone());
+            ps.setString(2, emp.getAddress());
+            ps.setString(3, emp.getEmergencyContact());
+            ps.setInt(4, emp.getEmpId());
 
             int count = ps.executeUpdate();
 
@@ -106,6 +109,7 @@ public class EmployeeDAO {
 
         return updated;
     }
+
     
     public Employee getManagerDetails(int managerId) {
 

@@ -15,9 +15,10 @@ public class EmployeeService {
         return employeeDAO.getEmployeeById(empId);
     }
     
-    public boolean editProfile(int empId, String phone, String address) {
-        return employeeDAO.updateProfile(empId, phone, address);
+    public boolean updateProfile(Employee emp) {
+        return employeeDAO.updateProfile(emp);
     }
+
 
     public Employee viewManager(int managerId) {
         return employeeDAO.getManagerDetails(managerId);
@@ -47,6 +48,54 @@ public class EmployeeService {
     public ResultSet viewAllEmployees() {
         return employeeDAO.getAllEmployees();
     }
+    
+    public java.sql.ResultSet viewMyLeaves(int empId) {
+        return leaveDAO.getEmployeeLeaves(empId);
+    }
+    
+    public ResultSet viewHolidays() {
+        return leaveDAO.getHolidays();
+    }
+    
+    public boolean cancelLeave(int leaveId, int empId) {
+        return leaveDAO.cancelLeave(leaveId, empId);
+    }
+    
+    public ResultSet viewNotifications(int empId) {
+        return leaveDAO.getNotifications(empId);
+    }
+
+    public boolean submitPerformanceReview(int empId,
+            String deliverables,
+            String accomplishments,
+            String improvements,
+            int rating) {
+
+        return leaveDAO.submitReview(empId,
+                deliverables, accomplishments, improvements, rating);
+    }
+
+    public ResultSet viewMyPerformanceReview(int empId) {
+        return leaveDAO.getMyReview(empId);
+    }
+
+    public boolean addGoal(int empId, String desc,
+            java.sql.Date deadline,
+            String priority,
+            String metrics) {
+
+        return leaveDAO.addGoal(empId, desc, deadline, priority, metrics);
+    }
+
+    public ResultSet viewGoals(int empId) {
+        return leaveDAO.getGoals(empId);
+    }
+
+    public boolean updateGoalProgress(int goalId, int progress) {
+        return leaveDAO.updateGoalProgress(goalId, progress);
+    }
+
+
 
 
 }

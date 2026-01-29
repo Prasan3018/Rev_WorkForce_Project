@@ -14,6 +14,8 @@ public class Employee {
     private Date doj;
     private int managerId;
     private String status;
+    private String emergencyContact;
+
 
     // Default Constructor
     public Employee() {
@@ -107,4 +109,13 @@ public class Employee {
     public void setStatus(String status) {
         this.status = status;
     }
+    
+    public String getEmergencyContact() {
+        return emergencyContact;
+    }
+
+    public void setEmergencyContact(String emergencyContact) {
+        this.emergencyContact = emergencyContact;
+    }
+
 }
