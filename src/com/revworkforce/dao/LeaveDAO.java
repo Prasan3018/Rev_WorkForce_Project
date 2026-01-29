@@ -685,5 +685,50 @@ public class LeaveDAO {
         return rs;
     }
 
+    public boolean addLeavePolicy(String type, int maxDays, String paid, String carry) {
+
+        boolean added = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO LEAVE_POLICY VALUES (POLICY_SEQ.NEXTVAL, ?, ?, ?, ?)"
+            );
+
+            ps.setString(1, type);
+            ps.setInt(2, maxDays);
+            ps.setString(3, paid);
+            ps.setString(4, carry);
+
+            if (ps.executeUpdate() > 0)
+                added = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return added;
+    }
+
+    public ResultSet getLeavePolicies() {
+
+        ResultSet rs = null;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT LEAVE_TYPE, MAX_DAYS, IS_PAID, CARRY_FORWARD FROM LEAVE_POLICY"
+            );
+
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
 
 }

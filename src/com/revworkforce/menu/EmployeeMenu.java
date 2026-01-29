@@ -94,6 +94,7 @@ public class EmployeeMenu {
                 System.out.println("Casual Leave : " + balance[0]);
                 System.out.println("Sick Leave   : " + balance[1]);
                 System.out.println("Paid Leave   : " + balance[2]);
+                System.out.println("Privilege Leave : " + balance[3]);
                 break;
                 
             case 5:

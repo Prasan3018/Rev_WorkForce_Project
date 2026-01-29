@@ -41,9 +41,10 @@ public class EmployeeService {
         return employeeDAO.addEmployee(emp);
     }
     
-    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl) {
-        return employeeDAO.assignLeaveBalance(empId, cl, sl, pl);
+    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
+        return employeeDAO.assignLeaveBalance(empId, cl, sl, pl, prl);
     }
+
 
     public ResultSet viewAllEmployees() {
         return employeeDAO.getAllEmployees();
@@ -111,9 +112,10 @@ public class EmployeeService {
         return employeeDAO.updateEmployeeStatus(empId, status);
     }
 
-    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl) {
-        return employeeDAO.adjustLeaveBalance(empId, cl, sl, pl);
+    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
+        return employeeDAO.adjustLeaveBalance(empId, cl, sl, pl, prl);
     }
+
 
     public boolean revokeLeave(int leaveId) {
         return leaveDAO.revokeLeave(leaveId);
@@ -123,5 +125,22 @@ public class EmployeeService {
         return leaveDAO.getAllLeaves();
     }
 
+    public ResultSet getLeaveReportByDepartment() {
+        return leaveDAO.getLeaveReportByDepartment();
+    }
+
+    public ResultSet getLeaveReportByEmployee() {
+        return leaveDAO.getLeaveReportByEmployee();
+    }
+
+    public boolean addLeavePolicy(String type, int days, String paid, String carry) {
+        return leaveDAO.addLeavePolicy(type, days, paid, carry);
+    }
+
+    public ResultSet viewLeavePolicies() {
+        return leaveDAO.getLeavePolicies();
+    }
+
+    
 
 }

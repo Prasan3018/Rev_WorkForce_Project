@@ -29,6 +29,8 @@ public class AdminMenu {
             System.out.println("11. Revoke Leave");
             System.out.println("12. Leave Report By Department");
             System.out.println("13. Leave Report By Employee");
+            System.out.println("14. Add Leave Policy");
+            System.out.println("15. View Leave Policies");
             System.out.println("0. Logout");
             System.out.print("Enter choice: ");
 
@@ -141,7 +143,12 @@ public class AdminMenu {
                 System.out.print("Enter Paid Leave: ");
                 int pl = sc.nextInt();
 
-                boolean assigned = employeeService.assignLeaveBalance(empId, cl, sl, pl);
+                System.out.print("Enter Privilege Leave: ");
+                int prl = sc.nextInt();
+
+                boolean assigned =
+                    employeeService.assignLeaveBalance(empId, cl, sl, pl, prl);
+
 
                 if (assigned) {
                     System.out.println("Leave balance assigned successfully.");
@@ -226,8 +233,12 @@ public class AdminMenu {
                 System.out.print("New PL: ");
                 int npl = sc.nextInt();
 
+                System.out.print("New PRL: ");
+                int prl2 = sc.nextInt();
+
                 boolean adj =
-                    employeeService.adjustLeaveBalance(aid, ncl, nsl, npl);
+                    employeeService.adjustLeaveBalance(aid, ncl, nsl, npl, prl2);
+
 
                 System.out.println(adj ? "Balance updated" : "Failed");
                 break;
@@ -301,7 +312,49 @@ public class AdminMenu {
                     e.printStackTrace();
                 }
                 break;
+                
+            case 14:
+                sc.nextLine();
 
+                System.out.print("Leave Type: ");
+                String type = sc.nextLine();
+
+                System.out.print("Max Days: ");
+                int days = sc.nextInt();
+                sc.nextLine();
+
+                System.out.print("Is Paid (YES/NO): ");
+                String paid = sc.nextLine();
+
+                System.out.print("Carry Forward (YES/NO): ");
+                String carry = sc.nextLine();
+
+                boolean added =
+                    employeeService.addLeavePolicy(type, days, paid, carry);
+
+                System.out.println(added ? "Policy added" : "Failed");
+                break;
+
+
+            case 15:
+                try {
+                    ResultSet rp = employeeService.viewLeavePolicies();
+
+                    System.out.println("TYPE | MAX_DAYS | PAID | CARRY_FORWARD");
+
+                    while (rp.next()) {
+                        System.out.println(
+                            rp.getString("LEAVE_TYPE") + " | " +
+                            rp.getInt("MAX_DAYS") + " | " +
+                            rp.getString("IS_PAID") + " | " +
+                            rp.getString("CARRY_FORWARD")
+                        );
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
 
 
             case 0:

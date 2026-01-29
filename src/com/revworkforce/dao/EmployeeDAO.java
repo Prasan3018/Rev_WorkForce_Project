@@ -143,13 +143,13 @@ public class EmployeeDAO {
  // Get leave balance for employee
     public int[] getLeaveBalance(int empId) {
 
-        int[] balance = new int[3]; // CL, SL, PL
+        int[] balance = new int[4]; // CL, SL, PL, PRL
 
         try {
             Connection con = DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
-                "SELECT CL, SL, PL FROM LEAVE_BALANCE WHERE EMP_ID=?"
+                "SELECT CL, SL, PL, PRL FROM LEAVE_BALANCE WHERE EMP_ID=?"
             );
 
             ps.setInt(1, empId);
@@ -159,6 +159,7 @@ public class EmployeeDAO {
                 balance[0] = rs.getInt("CL");
                 balance[1] = rs.getInt("SL");
                 balance[2] = rs.getInt("PL");
+                balance[3] = rs.getInt("PRL");
             }
 
         } catch (Exception e) {
@@ -209,7 +210,8 @@ public class EmployeeDAO {
     }
     
     
-    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl) {
+    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl, int prl)
+ {
 
         boolean assigned = false;
 
@@ -217,13 +219,14 @@ public class EmployeeDAO {
             Connection con = DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO LEAVE_BALANCE VALUES (?, ?, ?, ?)"
+                "INSERT INTO LEAVE_BALANCE VALUES (?, ?, ?, ?, ?)"
             );
 
             ps.setInt(1, empId);
             ps.setInt(2, cl);
             ps.setInt(3, sl);
             ps.setInt(4, pl);
+            ps.setInt(5, prl);
 
             int count = ps.executeUpdate();
 
@@ -371,7 +374,8 @@ public class EmployeeDAO {
         return rs;
     }
 
-    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl) {
+    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl, int prl)
+ {
 
         boolean updated = false;
 
@@ -379,13 +383,14 @@ public class EmployeeDAO {
             Connection con = DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
-                "UPDATE LEAVE_BALANCE SET CL=?, SL=?, PL=? WHERE EMP_ID=?"
+                "UPDATE LEAVE_BALANCE SET CL=?, SL=?, PL=?, PRL=? WHERE EMP_ID=?"
             );
 
             ps.setInt(1, cl);
             ps.setInt(2, sl);
             ps.setInt(3, pl);
             ps.setInt(4, empId);
+            ps.setInt(5, empId);
 
             if (ps.executeUpdate() > 0)
                 updated = true;
