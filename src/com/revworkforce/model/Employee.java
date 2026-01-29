@@ -15,6 +15,11 @@ public class Employee {
     private int managerId;
     private String status;
     private String emergencyContact;
+    private java.sql.Date dob;
+    private String department;
+    private String designation;
+    private double salary;
+
 
 
     // Default Constructor
@@ -117,5 +122,40 @@ public class Employee {
     public void setEmergencyContact(String emergencyContact) {
         this.emergencyContact = emergencyContact;
     }
+    
+    public java.sql.Date getDob() {
+        return dob;
+    }
+
+    public void setDob(java.sql.Date dob) {
+        this.dob = dob;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+    
+    
+
 
 }

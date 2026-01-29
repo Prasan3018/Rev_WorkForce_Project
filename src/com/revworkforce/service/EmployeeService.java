@@ -95,7 +95,33 @@ public class EmployeeService {
         return leaveDAO.updateGoalProgress(goalId, progress);
     }
 
+    public boolean changeManager(int empId, int managerId) {
+        return employeeDAO.changeManager(empId, managerId);
+    }
 
+    public ResultSet searchEmployees(String key) {
+        return employeeDAO.searchEmployees(key);
+    }
+
+    public boolean updateEmployee(Employee emp) {
+        return employeeDAO.updateEmployee(emp);
+    }
+
+    public boolean updateEmployeeStatus(int empId, String status) {
+        return employeeDAO.updateEmployeeStatus(empId, status);
+    }
+
+    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl) {
+        return employeeDAO.adjustLeaveBalance(empId, cl, sl, pl);
+    }
+
+    public boolean revokeLeave(int leaveId) {
+        return leaveDAO.revokeLeave(leaveId);
+    }
+    
+    public ResultSet viewAllLeaves() {
+        return leaveDAO.getAllLeaves();
+    }
 
 
 }

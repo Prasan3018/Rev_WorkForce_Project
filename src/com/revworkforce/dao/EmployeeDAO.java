@@ -176,8 +176,11 @@ public class EmployeeDAO {
             Connection con = DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO EMPLOYEE VALUES (?, ?, ?, ?, ?, ?, ?, SYSDATE, ?, 'ACTIVE')"
-            );
+            		 "INSERT INTO EMPLOYEE " +
+            		 "(EMP_ID, NAME, EMAIL, PASSWORD, ROLE, PHONE, ADDRESS, JOINING_DATE, MANAGER_ID, STATUS, DOB, DEPARTMENT, DESIGNATION, SALARY) " +
+            		 "VALUES (?, ?, ?, ?, ?, ?, ?, SYSDATE, ?, 'ACTIVE', ?, ?, ?, ?)"
+            		);
+
 
             ps.setInt(1, emp.getEmpId());
             ps.setString(2, emp.getName());
@@ -187,6 +190,10 @@ public class EmployeeDAO {
             ps.setString(6, emp.getPhone());
             ps.setString(7, emp.getAddress());
             ps.setInt(8, emp.getManagerId());
+            ps.setDate(9, emp.getDob());
+            ps.setString(10, emp.getDepartment());
+            ps.setString(11, emp.getDesignation());
+            ps.setDouble(12, emp.getSalary());
 
             int count = ps.executeUpdate();
 
@@ -251,8 +258,145 @@ public class EmployeeDAO {
         return rs;
     }
 
+    public boolean updateEmployee(Employee emp) {
+
+        boolean updated = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE EMPLOYEE SET NAME=?, EMAIL=?, PHONE=?, ADDRESS=?, " +
+                "DEPARTMENT=?, DESIGNATION=?, SALARY=?, MANAGER_ID=? " +
+                "WHERE EMP_ID=?"
+            );
+
+            ps.setString(1, emp.getName());
+            ps.setString(2, emp.getEmail());
+            ps.setString(3, emp.getPhone());
+            ps.setString(4, emp.getAddress());
+            ps.setString(5, emp.getDepartment());
+            ps.setString(6, emp.getDesignation());
+            ps.setDouble(7, emp.getSalary());
+            ps.setInt(8, emp.getManagerId());
+            ps.setInt(9, emp.getEmpId());
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) updated = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return updated;
+    }
+
+    public boolean updateEmployeeStatus(int empId, String status) {
+
+        boolean updated = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE EMPLOYEE SET STATUS=? WHERE EMP_ID=?"
+            );
+
+            ps.setString(1, status);
+            ps.setInt(2, empId);
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) updated = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return updated;
+    }
     
-   
+    public boolean changeManager(int empId, int managerId) {
+
+        boolean changed = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE EMPLOYEE SET MANAGER_ID=? WHERE EMP_ID=?"
+            );
+
+            ps.setInt(1, managerId);
+            ps.setInt(2, empId);
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) changed = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return changed;
+    }
+
+    public ResultSet searchEmployees(String keyword) {
+
+        ResultSet rs = null;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT EMP_ID, NAME, DEPARTMENT, DESIGNATION " +
+                "FROM EMPLOYEE " +
+                "WHERE NAME LIKE ? OR EMP_ID LIKE ? OR DEPARTMENT LIKE ? OR DESIGNATION LIKE ?"
+            );
+
+            String key = "%" + keyword + "%";
+
+            ps.setString(1, key);
+            ps.setString(2, key);
+            ps.setString(3, key);
+            ps.setString(4, key);
+
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl) {
+
+        boolean updated = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE LEAVE_BALANCE SET CL=?, SL=?, PL=? WHERE EMP_ID=?"
+            );
+
+            ps.setInt(1, cl);
+            ps.setInt(2, sl);
+            ps.setInt(3, pl);
+            ps.setInt(4, empId);
+
+            if (ps.executeUpdate() > 0)
+                updated = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return updated;
+    }
+
 }
 
 
