@@ -210,29 +210,44 @@ public class EmployeeDAO {
     }
     
     
-    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl, int prl)
- {
+    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
 
         boolean assigned = false;
 
         try {
             Connection con = DBConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO LEAVE_BALANCE VALUES (?, ?, ?, ?, ?)"
+            // 1️⃣ Try UPDATE first
+            PreparedStatement updatePs = con.prepareStatement(
+                "UPDATE LEAVE_BALANCE SET CL=?, SL=?, PL=?, PRL=? WHERE EMP_ID=?"
             );
 
-            ps.setInt(1, empId);
-            ps.setInt(2, cl);
-            ps.setInt(3, sl);
-            ps.setInt(4, pl);
-            ps.setInt(5, prl);
+            updatePs.setInt(1, cl);
+            updatePs.setInt(2, sl);
+            updatePs.setInt(3, pl);
+            updatePs.setInt(4, prl);
+            updatePs.setInt(5, empId);
 
-            int count = ps.executeUpdate();
+            int count = updatePs.executeUpdate();
 
-            if (count > 0) {
-                assigned = true;
+            // 2️⃣ If no record exists → INSERT
+            if (count == 0) {
+
+                PreparedStatement insertPs = con.prepareStatement(
+                    "INSERT INTO LEAVE_BALANCE VALUES (?, ?, ?, ?, ?)"
+                );
+
+                insertPs.setInt(1, empId);
+                insertPs.setInt(2, cl);
+                insertPs.setInt(3, sl);
+                insertPs.setInt(4, pl);
+                insertPs.setInt(5, prl);
+
+                count = insertPs.executeUpdate();
             }
+
+            if (count > 0)
+                assigned = true;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,6 +255,7 @@ public class EmployeeDAO {
 
         return assigned;
     }
+
 
     public ResultSet getAllEmployees() {
 
