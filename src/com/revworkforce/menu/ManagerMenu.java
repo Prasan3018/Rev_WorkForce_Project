@@ -4,489 +4,475 @@ import java.sql.ResultSet;
 import java.util.Scanner;
 import com.revworkforce.service.ManagerService;
 
-
 import com.revworkforce.model.Employee;
 
 public class ManagerMenu {
 
-    private ManagerService managerService = new ManagerService();
-
-    public void showMenu(Employee manager) {
-
-        Scanner sc = new Scanner(System.in);
-
-        while (true) {
-
-            System.out.println("\n===== Manager Menu =====");
-            System.out.println("1. View Pending Leave Requests");
-            System.out.println("2. Review Employee Performance");
-            System.out.println("3. View Notifications");
-            System.out.println("4. View My Team Members");
-            System.out.println("5. View Team Leave Balances");
-            System.out.println("6. View Team Goals & Progress");
-            System.out.println("7. View Team Performance Summary");
-            System.out.println("8. View Team Leave Calendar");
-            System.out.println("9. View Team Hierarchy");
-            System.out.println("10. View Team Member Profile");
-            System.out.println("11. View Team Attendance Summary");
-            System.out.println("0. Logout");
-            System.out.print("Enter choice: ");
+	private ManagerService managerService = new ManagerService();
+
+	public void showMenu(Employee manager) {
+
+		Scanner sc = new Scanner(System.in);
+
+		while (true) {
 
-            int choice = sc.nextInt();
-            sc.nextLine(); // clear buffer
+			System.out.println("\n===== Manager Menu =====");
+			System.out.println("1. View Pending Leave Requests");
+			System.out.println("2. Review Employee Performance");
+			System.out.println("3. View Notifications");
+			System.out.println("4. View My Team Members");
+			System.out.println("5. View Team Leave Balances");
+			System.out.println("6. View Team Goals & Progress");
+			System.out.println("7. View Team Performance Summary");
+			System.out.println("8. View Team Leave Calendar");
+			System.out.println("9. View Team Hierarchy");
+			System.out.println("10. View Team Member Profile");
+			System.out.println("11. View Team Attendance Summary");
+			System.out.println("0. Logout");
+			System.out.print("Enter choice: ");
 
-            switch (choice) {
+			int choice = sc.nextInt();
+			sc.nextLine(); // clear buffer
 
-            case 1:
-                try {
-                    ResultSet rs =
-                        managerService.viewPendingLeaves(manager.getEmpId());
+			switch (choice) {
 
-                    System.out.println("\n----- Pending Leave Requests -----");
-                    System.out.println("LEAVE_ID | EMP_ID | TYPE | FROM | TO | REASON");
-                    System.out.println("---------------------------------");
+			case 1:
+				try {
+					ResultSet rs = managerService.viewPendingLeaves(manager
+							.getEmpId());
 
-                    boolean found = false;
-                    int empId = 0;
+					System.out.println("\n----- Pending Leave Requests -----");
+					System.out
+							.println("LEAVE_ID | EMP_ID | TYPE | FROM | TO | REASON");
+					System.out.println("---------------------------------");
 
-                    while (rs.next()) {
-                        found = true;
-                        empId = rs.getInt("EMP_ID");
-                        System.out.println(
-                            rs.getInt("LEAVE_ID") + " | " +
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("LEAVE_TYPE") + " | " +
-                            rs.getDate("FROM_DATE") + " | " +
-                            rs.getDate("TO_DATE") + " | " +
-                            rs.getString("REASON")
-                        );
-                    }
+					boolean found = false;
+					int empId = 0;
 
-                    if (!found) {
-                        System.out.println("No pending leave requests.");
-                        break;
-                    }
+					while (rs.next()) {
+						found = true;
+						empId = rs.getInt("EMP_ID");
+						System.out.println(rs.getInt("LEAVE_ID") + " | "
+								+ rs.getInt("EMP_ID") + " | "
+								+ rs.getString("LEAVE_TYPE") + " | "
+								+ rs.getDate("FROM_DATE") + " | "
+								+ rs.getDate("TO_DATE") + " | "
+								+ rs.getString("REASON"));
+					}
 
-                    System.out.println("---------------------------------");
-                    System.out.print("Enter the LEAVE_ID you want to process: ");
+					if (!found) {
+						System.out.println("No pending leave requests.");
+						break;
+					}
 
-                    int leaveId = sc.nextInt();
-                    sc.nextLine();
+					System.out.println("---------------------------------");
+					System.out
+							.print("Enter the LEAVE_ID you want to process: ");
 
-                    System.out.print("Type A to Approve or R to Reject: ");
-                    String action = sc.nextLine();
+					int leaveId = sc.nextInt();
+					sc.nextLine();
 
-                    String status =
-                        action.equalsIgnoreCase("A") ? "APPROVED" : "REJECTED";
+					System.out.print("Type A to Approve or R to Reject: ");
+					String action = sc.nextLine();
 
-                    System.out.print("Enter comment: ");
-                    String comment = sc.nextLine();
+					String status = action.equalsIgnoreCase("A") ? "APPROVED"
+							: "REJECTED";
 
-                    boolean result =
-                        managerService.approveOrRejectLeave(leaveId, status, comment);
+					System.out.print("Enter comment: ");
+					String comment = sc.nextLine();
 
+					boolean result = managerService.approveOrRejectLeave(
+							leaveId, status, comment);
 
-                    if (result) {
+					if (result) {
 
-                        // Send notification to employee
-                        managerService.sendNotification(
-                                empId,
-                                "Your leave request (ID " + leaveId + ") has been " + status
-                        );
+						// Send notification to employee
+						managerService.sendNotification(empId,
+								"Your leave request (ID " + leaveId
+										+ ") has been " + status);
 
-                        System.out.println("Leave has been " + status + " successfully.");
-                    }
-                    else {
-                        System.out.println("Failed to update leave.");
-                    }
+						System.out.println("Leave has been " + status
+								+ " successfully.");
+					} else {
+						System.out.println("Failed to update leave.");
+					}
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-                
-            case 2: {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
 
-                try {
-                    ResultSet rs =
-                        managerService.viewSubmittedReviews(manager.getEmpId());
+			case 2: {
 
-                    System.out.println("\n----- Submitted Reviews -----");
-                    System.out.println("REVIEW_ID | EMP_ID | SELF_RATING");
+				try {
+					ResultSet rs = managerService.viewSubmittedReviews(manager
+							.getEmpId());
 
-                    boolean found = false;
+					System.out.println("\n----- Submitted Reviews -----");
+					System.out.println("REVIEW_ID | EMP_ID | SELF_RATING");
 
-                    int empId = 0;
+					boolean found = false;
 
-                    while (rs.next()) {
+					int empId = 0;
 
-                        found = true;
+					while (rs.next()) {
 
-                        empId = rs.getInt("EMP_ID");   // capture employee id
+						found = true;
 
-                        System.out.println(
-                            rs.getInt("REVIEW_ID") + " | " +
-                            empId + " | " +
-                            rs.getInt("SELF_RATING")
-                        );
-                    }
+						empId = rs.getInt("EMP_ID"); // capture employee id
 
+						System.out.println(rs.getInt("REVIEW_ID") + " | "
+								+ empId + " | " + rs.getInt("SELF_RATING"));
+					}
 
-                    if (!found) {
-                        System.out.println("No reviews to process.");
-                        break;
-                    }
+					if (!found) {
+						System.out.println("No reviews to process.");
+						break;
+					}
 
-                    System.out.print("\nEnter REVIEW_ID to give feedback: ");
-                    int reviewId = sc.nextInt();
-                    sc.nextLine();
+					System.out.print("\nEnter REVIEW_ID to give feedback: ");
+					int reviewId = sc.nextInt();
+					sc.nextLine();
 
-                    System.out.print("Enter feedback: ");
-                    String feedback = sc.nextLine();
+					System.out.print("Enter feedback: ");
+					String feedback = sc.nextLine();
 
-                    System.out.print("Enter rating (1-5): ");
-                    int rating = sc.nextInt();
+					System.out.print("Enter rating (1-5): ");
+					int rating = sc.nextInt();
 
-                    boolean updated =
-                        managerService.giveFeedback(reviewId, feedback, rating);
+					boolean updated = managerService.giveFeedback(reviewId,
+							feedback, rating);
 
-                    if (updated) {
+					if (updated) {
 
-                        // Send notification to employee
-                        managerService.sendNotification(
-                            empId,
-                            "Manager has reviewed your performance and provided feedback."
-                        );
+						// Send notification to employee
+						managerService
+								.sendNotification(empId,
+										"Manager has reviewed your performance and provided feedback.");
 
-                        System.out.println("Feedback submitted successfully.");
+						System.out.println("Feedback submitted successfully.");
 
-                    } else {
-                        System.out.println("Failed to submit feedback.");
-                    }
+					} else {
+						System.out.println("Failed to submit feedback.");
+					}
 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+				break;
+			}
 
-                break;
-            }
-            
-            case 3: {
+			case 3: {
 
-                try {
-                    ResultSet rs =
-                        managerService.viewNotifications(manager.getEmpId());
+				try {
+					ResultSet rs = managerService.viewNotifications(manager
+							.getEmpId());
 
-                    System.out.println("\n----- Notifications -----");
+					System.out.println("\n----- Notifications -----");
 
-                    boolean found = false;
+					boolean found = false;
 
-                    while (rs.next()) {
+					while (rs.next()) {
 
-                        found = true;
+						found = true;
 
-                        System.out.println(
-                            rs.getInt("NOTIF_ID") + ". " +
-                            rs.getString("MESSAGE") +
-                            " [" + rs.getString("STATUS") + "]"
-                        );
-                    }
+						System.out.println(rs.getInt("NOTIF_ID") + ". "
+								+ rs.getString("MESSAGE") + " ["
+								+ rs.getString("STATUS") + "]");
+					}
 
-                    if (!found) {
-                        System.out.println("No notifications.");
-                    }
+					if (!found) {
+						System.out.println("No notifications.");
+					}
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                break;
-            }
+				break;
+			}
 
-            case 4: {
+			case 4: {
 
-                try {
-                    ResultSet rs =
-                        managerService.viewTeamMembers(manager.getEmpId());
+				try {
+					ResultSet rs = managerService.viewTeamMembers(manager
+							.getEmpId());
 
-                    System.out.println("\n----- My Team Members -----");
-                    System.out.println("EMP_ID | NAME | EMAIL | ROLE | PHONE | STATUS");
+					System.out.println("\n----- My Team Members -----");
+					System.out
+							.println("EMP_ID | NAME | EMAIL | ROLE | PHONE | STATUS");
 
-                    boolean found = false;
+					boolean found = false;
 
-                    while (rs.next()) {
+					while (rs.next()) {
 
-                        found = true;
+						found = true;
 
-                        System.out.println(
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("NAME") + " | " +
-                            rs.getString("EMAIL") + " | " +
-                            rs.getString("ROLE") + " | " +
-                            rs.getString("PHONE") + " | " +
-                            rs.getString("STATUS")
-                        );
-                    }
+						System.out.println(rs.getInt("EMP_ID") + " | "
+								+ rs.getString("NAME") + " | "
+								+ rs.getString("EMAIL") + " | "
+								+ rs.getString("ROLE") + " | "
+								+ rs.getString("PHONE") + " | "
+								+ rs.getString("STATUS"));
+					}
 
-                    if (!found) {
-                        System.out.println("No team members found.");
-                    }
+					if (!found) {
+						System.out.println("No team members found.");
+					}
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                break;
-            }
-            
-            case 5: {
+				break;
+			}
 
-                try {
-                    ResultSet rs =
-                        managerService.viewTeamLeaveBalances(manager.getEmpId());
+			case 5: {
 
-                    System.out.println("\n----- Team Leave Balances -----");
-                    System.out.println("EMP_ID | NAME | CL | SL | PL");
+				try {
+					ResultSet rs = managerService.viewTeamLeaveBalances(manager
+							.getEmpId());
 
-                    boolean found = false;
+					System.out.println("\n----- Team Leave Balances -----");
+					System.out.println("EMP_ID | NAME | CL | SL | PL");
 
-                    while (rs.next()) {
+					boolean found = false;
 
-                        found = true;
+					while (rs.next()) {
 
-                        System.out.println(
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("NAME") + " | " +
-                            rs.getInt("CL") + " | " +
-                            rs.getInt("SL") + " | " +
-                            rs.getInt("PL")
-                        );
-                    }
+						found = true;
 
-                    if (!found) {
-                        System.out.println("No leave balance records found.");
-                    }
+						System.out.println(rs.getInt("EMP_ID") + " | "
+								+ rs.getString("NAME") + " | "
+								+ rs.getInt("CL") + " | " + rs.getInt("SL")
+								+ " | " + rs.getInt("PL"));
+					}
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+					if (!found) {
+						System.out.println("No leave balance records found.");
+					}
 
-                break;
-            }
-            
-            case 6: {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                try {
-                    ResultSet rs =
-                        managerService.viewTeamGoals(manager.getEmpId());
+				break;
+			}
 
-                    System.out.println("\n----- Team Goals & Progress -----");
-                    System.out.println("GOAL_ID | EMP_ID | DESCRIPTION | DEADLINE | PRIORITY | PROGRESS");
+			case 6: {
 
-                    boolean found = false;
+				try {
+					ResultSet rs = managerService.viewTeamGoals(manager
+							.getEmpId());
 
-                    while (rs.next()) {
+					System.out.println("\n----- Team Goals & Progress -----");
+					System.out
+							.println("GOAL_ID | EMP_ID | DESCRIPTION | DEADLINE | PRIORITY | PROGRESS");
 
-                        found = true;
+					boolean found = false;
 
-                        System.out.println(
-                            rs.getInt("GOAL_ID") + " | " +
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("GOAL_DESC") + " | " +
-                            rs.getDate("DEADLINE") + " | " +
-                            rs.getString("PRIORITY") + " | " +
-                            rs.getInt("PROGRESS") + "%"
-                        );
-                    }
+					while (rs.next()) {
 
-                    if (!found) {
-                        System.out.println("No goals found.");
-                    }
+						found = true;
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+						System.out.println(rs.getInt("GOAL_ID") + " | "
+								+ rs.getInt("EMP_ID") + " | "
+								+ rs.getString("GOAL_DESC") + " | "
+								+ rs.getDate("DEADLINE") + " | "
+								+ rs.getString("PRIORITY") + " | "
+								+ rs.getInt("PROGRESS") + "%");
+					}
 
-                break;
-            }
+					if (!found) {
+						System.out.println("No goals found.");
+					}
 
-            case 7: {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                try {
-                    ResultSet rs =
-                        managerService.viewTeamPerformanceSummary(manager.getEmpId());
+				break;
+			}
 
-                    System.out.println("\n----- Team Performance Summary -----");
-                    System.out.println("EMP_ID | NAME | SELF_RATING | MANAGER_RATING | STATUS");
+			case 7: {
 
-                    boolean found = false;
+				try {
+					ResultSet rs = managerService
+							.viewTeamPerformanceSummary(manager.getEmpId());
 
-                    while (rs.next()) {
+					System.out
+							.println("\n----- Team Performance Summary -----");
+					System.out
+							.println("EMP_ID | NAME | SELF_RATING | MANAGER_RATING | STATUS");
 
-                        found = true;
+					boolean found = false;
 
-                        System.out.println(
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("NAME") + " | " +
-                            rs.getInt("SELF_RATING") + " | " +
-                            rs.getInt("MANAGER_RATING") + " | " +
-                            rs.getString("STATUS")
-                        );
-                    }
+					while (rs.next()) {
 
-                    if (!found) {
-                        System.out.println("No performance records found.");
-                    }
+						found = true;
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+						System.out.println(rs.getInt("EMP_ID") + " | "
+								+ rs.getString("NAME") + " | "
+								+ rs.getInt("SELF_RATING") + " | "
+								+ rs.getInt("MANAGER_RATING") + " | "
+								+ rs.getString("STATUS"));
+					}
 
-                break;
-            }
-            
-            case 8: {
+					if (!found) {
+						System.out.println("No performance records found.");
+					}
 
-                try {
-                    ResultSet rs =
-                        managerService.viewTeamLeaveCalendar(manager.getEmpId());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                    System.out.println("\n----- Team Leave Calendar -----");
-                    System.out.println("EMP_ID | NAME | FROM_DATE | TO_DATE | TYPE | STATUS");
+				break;
+			}
 
-                    boolean found = false;
+			case 8: {
 
-                    while (rs.next()) {
+				try {
+					ResultSet rs = managerService.viewTeamLeaveCalendar(manager
+							.getEmpId());
 
-                        found = true;
+					System.out.println("\n----- Team Leave Calendar -----");
+					System.out
+							.println("EMP_ID | NAME | FROM_DATE | TO_DATE | TYPE | STATUS");
 
-                        System.out.println(
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("NAME") + " | " +
-                            rs.getDate("FROM_DATE") + " | " +
-                            rs.getDate("TO_DATE") + " | " +
-                            rs.getString("LEAVE_TYPE") + " | " +
-                            rs.getString("STATUS")
-                        );
-                    }
+					boolean found = false;
 
-                    if (!found) {
-                        System.out.println("No approved leaves found.");
-                    }
+					while (rs.next()) {
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+						found = true;
 
-                break;
-            }
+						System.out.println(rs.getInt("EMP_ID") + " | "
+								+ rs.getString("NAME") + " | "
+								+ rs.getDate("FROM_DATE") + " | "
+								+ rs.getDate("TO_DATE") + " | "
+								+ rs.getString("LEAVE_TYPE") + " | "
+								+ rs.getString("STATUS"));
+					}
 
-            case 9: {
+					if (!found) {
+						System.out.println("No approved leaves found.");
+					}
 
-                try {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                    ResultSet rs =
-                        managerService.viewTeamHierarchy(manager.getEmpId());
+				break;
+			}
 
-                    System.out.println("\nManager: " + manager.getName() +
-                                       " (" + manager.getEmpId() + ")");
+			case 9: {
 
-                    System.out.println("\nEmployees:");
+				try {
 
-                    boolean found = false;
+					ResultSet rs = managerService.viewTeamHierarchy(manager
+							.getEmpId());
 
-                    while (rs.next()) {
+					System.out.println("\nManager: " + manager.getName() + " ("
+							+ manager.getEmpId() + ")");
 
-                        found = true;
+					System.out.println("\nEmployees:");
 
-                        System.out.println(
-                            rs.getInt("EMP_ID") + " - " +
-                            rs.getString("NAME")
-                        );
-                    }
+					boolean found = false;
 
-                    if (!found) {
-                        System.out.println("No employees found.");
-                    }
+					while (rs.next()) {
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+						found = true;
 
-                break;
-            }
+						System.out.println(rs.getInt("EMP_ID") + " - "
+								+ rs.getString("NAME"));
+					}
 
-            case 10: {
+					if (!found) {
+						System.out.println("No employees found.");
+					}
 
-                System.out.print("Enter Employee ID to view profile: ");
-                int empId = sc.nextInt();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-                Employee empProfile =
-                    managerService.viewTeamMemberProfile(empId);
+				break;
+			}
 
-                if (empProfile != null) {
+			case 10: {
 
-                    System.out.println("\n----- Employee Profile -----");
-                    System.out.println("Employee ID : " + empProfile.getEmpId());
-                    System.out.println("Name        : " + empProfile.getName());
-                    System.out.println("Email       : " + empProfile.getEmail());
-                    System.out.println("Role        : " + empProfile.getRole());
-                    System.out.println("Phone       : " + empProfile.getPhone());
-                    System.out.println("Address     : " + empProfile.getAddress());
-                    System.out.println("Emergency   : " + empProfile.getEmergencyContact());
-                    System.out.println("Manager ID  : " + empProfile.getManagerId());
-                    System.out.println("Status      : " + empProfile.getStatus());
+				System.out.print("Enter Employee ID to view profile: ");
+				int empId = sc.nextInt();
 
-                } else {
-                    System.out.println("Employee not found.");
-                }
+				Employee empProfile = managerService
+						.viewTeamMemberProfile(empId);
 
-                break;
-            }
+				if (empProfile != null) {
 
-            case 11: {
+					System.out.println("\n----- Employee Profile -----");
+					System.out
+							.println("Employee ID : " + empProfile.getEmpId());
+					System.out.println("Name        : " + empProfile.getName());
+					System.out
+							.println("Email       : " + empProfile.getEmail());
+					System.out.println("Role        : " + empProfile.getRole());
+					System.out
+							.println("Phone       : " + empProfile.getPhone());
+					System.out.println("Address     : "
+							+ empProfile.getAddress());
+					System.out.println("Emergency   : "
+							+ empProfile.getEmergencyContact());
+					System.out.println("Manager ID  : "
+							+ empProfile.getManagerId());
+					System.out.println("Status      : "
+							+ empProfile.getStatus());
 
-                try {
-                    ResultSet rs =
-                        managerService.viewTeamAttendanceSummary(manager.getEmpId());
+				} else {
+					System.out.println("Employee not found.");
+				}
 
-                    System.out.println("\n----- Team Attendance Summary -----");
-                    System.out.println("EMP_ID | NAME | PRESENT_DAYS | ABSENT_DAYS");
+				break;
+			}
 
-                    boolean found = false;
+			case 11: {
 
-                    while (rs.next()) {
+				try {
+					ResultSet rs = managerService
+							.viewTeamAttendanceSummary(manager.getEmpId());
 
-                        found = true;
+					System.out.println("\n----- Team Attendance Summary -----");
+					System.out
+							.println("EMP_ID | NAME | PRESENT_DAYS | ABSENT_DAYS");
 
-                        System.out.println(
-                            rs.getInt("EMP_ID") + " | " +
-                            rs.getString("NAME") + " | " +
-                            rs.getInt("PRESENT_DAYS") + " | " +
-                            rs.getInt("ABSENT_DAYS")
-                        );
-                    }
+					boolean found = false;
 
-                    if (!found) {
-                        System.out.println("No attendance data found.");
-                    }
+					while (rs.next()) {
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+						found = true;
 
-                break;
-            }
+						System.out.println(rs.getInt("EMP_ID") + " | "
+								+ rs.getString("NAME") + " | "
+								+ rs.getInt("PRESENT_DAYS") + " | "
+								+ rs.getInt("ABSENT_DAYS"));
+					}
 
+					if (!found) {
+						System.out.println("No attendance data found.");
+					}
 
-            case 0:
-                System.out.println("Logged out.");
-                return;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-            default:
-                System.out.println("Invalid choice.");
-            }
-        }
-    }
+				break;
+			}
+
+			case 0:
+				System.out.println("Logged out.");
+				return;
+
+			default:
+				System.out.println("Invalid choice.");
+			}
+		}
+	}
 }

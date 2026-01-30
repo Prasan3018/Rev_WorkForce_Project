@@ -1,5 +1,8 @@
 package com.revworkforce.dao;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 
 import java.sql.PreparedStatement;
@@ -9,6 +12,8 @@ import com.revworkforce.model.Employee;
 import com.revworkforce.util.DBConnection;
 
 public class EmployeeDAO {
+	
+	 private static final Logger logger = LogManager.getLogger(EmployeeDAO.class);
 
     // Validate login using EMP_ID and PASSWORD
     public Employee validateLogin(int empId, String password) {
@@ -200,10 +205,14 @@ public class EmployeeDAO {
 
             if (count > 0) {
                 added = true;
+                logger.info("Employee added: " + emp.getEmpId());
+
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("Error adding employee", e);
+
         }
 
         return added;

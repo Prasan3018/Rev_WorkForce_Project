@@ -9,23 +9,23 @@ import com.revworkforce.model.Employee;
 
 public class EmployeeDAOTest {
 
-    EmployeeDAO dao = new EmployeeDAO();
+	EmployeeDAO dao = new EmployeeDAO();
 
-    @Test
-    public void testGetEmployeeById() {
+	@Test
+	public void testGetEmployeeById() {
 
-        Employee emp = dao.getEmployeeById(1001); // existing employee
+		Employee emp = dao.getEmployeeById(1001); // existing employee
 
-        assertNotNull(emp);
-        assertEquals(1001, emp.getEmpId());
-    }
+		assertNotNull(emp);
+		assertEquals(1001, emp.getEmpId());
+	}
 
-    @Test
-    public void testUpdateEmployeeStatus() {
+	@Test
+	public void testUpdateEmployeeStatus() {
 
-        boolean result = dao.updateEmployeeStatus(1001, "ACTIVE");
+		boolean result = dao.updateEmployeeStatus(1001, "ACTIVE");
 
-        assertTrue(result);
-    }
+		assertTrue(result);
+	}
 
 }

@@ -5,142 +5,130 @@ import com.revworkforce.model.Employee;
 import com.revworkforce.dao.LeaveDAO;
 import java.sql.ResultSet;
 
-
 public class EmployeeService {
 
-    private EmployeeDAO employeeDAO = new EmployeeDAO();
+	private EmployeeDAO employeeDAO = new EmployeeDAO();
 
-    // View employee profile
-    public Employee viewProfile(int empId) {
-        return employeeDAO.getEmployeeById(empId);
-    }
-    
-    public boolean updateProfile(Employee emp) {
-        return employeeDAO.updateProfile(emp);
-    }
+	// View employee profile
+	public Employee viewProfile(int empId) {
+		return employeeDAO.getEmployeeById(empId);
+	}
 
+	public boolean updateProfile(Employee emp) {
+		return employeeDAO.updateProfile(emp);
+	}
 
-    public Employee viewManager(int managerId) {
-        return employeeDAO.getManagerDetails(managerId);
-    }
-    
-    public int[] viewLeaveBalance(int empId) {
-        return employeeDAO.getLeaveBalance(empId);
-    }
-    
-    private LeaveDAO leaveDAO = new LeaveDAO();
+	public Employee viewManager(int managerId) {
+		return employeeDAO.getManagerDetails(managerId);
+	}
 
-    public boolean applyLeave(int empId, String leaveType,
-                              java.sql.Date fromDate,
-                              java.sql.Date toDate,
-                              String reason) {
-        return leaveDAO.applyLeave(empId, leaveType, fromDate, toDate, reason);
-    }
+	public int[] viewLeaveBalance(int empId) {
+		return employeeDAO.getLeaveBalance(empId);
+	}
 
-    public boolean addEmployee(Employee emp) {
-        return employeeDAO.addEmployee(emp);
-    }
-    
-    public boolean assignLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
-        return employeeDAO.assignLeaveBalance(empId, cl, sl, pl, prl);
-    }
+	private LeaveDAO leaveDAO = new LeaveDAO();
 
+	public boolean applyLeave(int empId, String leaveType,
+			java.sql.Date fromDate, java.sql.Date toDate, String reason) {
+		return leaveDAO.applyLeave(empId, leaveType, fromDate, toDate, reason);
+	}
 
-    public ResultSet viewAllEmployees() {
-        return employeeDAO.getAllEmployees();
-    }
-    
-    public java.sql.ResultSet viewMyLeaves(int empId) {
-        return leaveDAO.getEmployeeLeaves(empId);
-    }
-    
-    public ResultSet viewHolidays() {
-        return leaveDAO.getHolidays();
-    }
-    
-    public boolean cancelLeave(int leaveId, int empId) {
-        return leaveDAO.cancelLeave(leaveId, empId);
-    }
-    
-    public ResultSet viewNotifications(int empId) {
-        return leaveDAO.getNotifications(empId);
-    }
+	public boolean addEmployee(Employee emp) {
+		return employeeDAO.addEmployee(emp);
+	}
 
-    public boolean submitPerformanceReview(int empId,
-            String deliverables,
-            String accomplishments,
-            String improvements,
-            int rating) {
+	public boolean assignLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
+		return employeeDAO.assignLeaveBalance(empId, cl, sl, pl, prl);
+	}
 
-        return leaveDAO.submitReview(empId,
-                deliverables, accomplishments, improvements, rating);
-    }
+	public ResultSet viewAllEmployees() {
+		return employeeDAO.getAllEmployees();
+	}
 
-    public ResultSet viewMyPerformanceReview(int empId) {
-        return leaveDAO.getMyReview(empId);
-    }
+	public java.sql.ResultSet viewMyLeaves(int empId) {
+		return leaveDAO.getEmployeeLeaves(empId);
+	}
 
-    public boolean addGoal(int empId, String desc,
-            java.sql.Date deadline,
-            String priority,
-            String metrics) {
+	public ResultSet viewHolidays() {
+		return leaveDAO.getHolidays();
+	}
 
-        return leaveDAO.addGoal(empId, desc, deadline, priority, metrics);
-    }
+	public boolean cancelLeave(int leaveId, int empId) {
+		return leaveDAO.cancelLeave(leaveId, empId);
+	}
 
-    public ResultSet viewGoals(int empId) {
-        return leaveDAO.getGoals(empId);
-    }
+	public ResultSet viewNotifications(int empId) {
+		return leaveDAO.getNotifications(empId);
+	}
 
-    public boolean updateGoalProgress(int goalId, int progress) {
-        return leaveDAO.updateGoalProgress(goalId, progress);
-    }
+	public boolean submitPerformanceReview(int empId, String deliverables,
+			String accomplishments, String improvements, int rating) {
 
-    public boolean changeManager(int empId, int managerId) {
-        return employeeDAO.changeManager(empId, managerId);
-    }
+		return leaveDAO.submitReview(empId, deliverables, accomplishments,
+				improvements, rating);
+	}
 
-    public ResultSet searchEmployees(String key) {
-        return employeeDAO.searchEmployees(key);
-    }
+	public ResultSet viewMyPerformanceReview(int empId) {
+		return leaveDAO.getMyReview(empId);
+	}
 
-    public boolean updateEmployee(Employee emp) {
-        return employeeDAO.updateEmployee(emp);
-    }
+	public boolean addGoal(int empId, String desc, java.sql.Date deadline,
+			String priority, String metrics) {
 
-    public boolean updateEmployeeStatus(int empId, String status) {
-        return employeeDAO.updateEmployeeStatus(empId, status);
-    }
+		return leaveDAO.addGoal(empId, desc, deadline, priority, metrics);
+	}
 
-    public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
-        return employeeDAO.adjustLeaveBalance(empId, cl, sl, pl, prl);
-    }
+	public ResultSet viewGoals(int empId) {
+		return leaveDAO.getGoals(empId);
+	}
 
+	public boolean updateGoalProgress(int goalId, int progress) {
+		return leaveDAO.updateGoalProgress(goalId, progress);
+	}
 
-    public boolean revokeLeave(int leaveId) {
-        return leaveDAO.revokeLeave(leaveId);
-    }
-    
-    public ResultSet viewAllLeaves() {
-        return leaveDAO.getAllLeaves();
-    }
+	public boolean changeManager(int empId, int managerId) {
+		return employeeDAO.changeManager(empId, managerId);
+	}
 
-    public ResultSet getLeaveReportByDepartment() {
-        return leaveDAO.getLeaveReportByDepartment();
-    }
+	public ResultSet searchEmployees(String key) {
+		return employeeDAO.searchEmployees(key);
+	}
 
-    public ResultSet getLeaveReportByEmployee() {
-        return leaveDAO.getLeaveReportByEmployee();
-    }
+	public boolean updateEmployee(Employee emp) {
+		return employeeDAO.updateEmployee(emp);
+	}
 
-    public boolean addLeavePolicy(String type, int days, String paid, String carry) {
-        return leaveDAO.addLeavePolicy(type, days, paid, carry);
-    }
+	public boolean updateEmployeeStatus(int empId, String status) {
+		return employeeDAO.updateEmployeeStatus(empId, status);
+	}
 
-    public ResultSet viewLeavePolicies() {
-        return leaveDAO.getLeavePolicies();
-    }
+	public boolean adjustLeaveBalance(int empId, int cl, int sl, int pl, int prl) {
+		return employeeDAO.adjustLeaveBalance(empId, cl, sl, pl, prl);
+	}
 
-    
+	public boolean revokeLeave(int leaveId) {
+		return leaveDAO.revokeLeave(leaveId);
+	}
+
+	public ResultSet viewAllLeaves() {
+		return leaveDAO.getAllLeaves();
+	}
+
+	public ResultSet getLeaveReportByDepartment() {
+		return leaveDAO.getLeaveReportByDepartment();
+	}
+
+	public ResultSet getLeaveReportByEmployee() {
+		return leaveDAO.getLeaveReportByEmployee();
+	}
+
+	public boolean addLeavePolicy(String type, int days, String paid,
+			String carry) {
+		return leaveDAO.addLeavePolicy(type, days, paid, carry);
+	}
+
+	public ResultSet viewLeavePolicies() {
+		return leaveDAO.getLeavePolicies();
+	}
 
 }

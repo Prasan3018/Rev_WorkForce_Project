@@ -10,26 +10,21 @@ import com.revworkforce.dao.LeaveDAO;
 
 public class LeaveDAOTest {
 
-    LeaveDAO dao = new LeaveDAO();
+	LeaveDAO dao = new LeaveDAO();
 
-    @Test
-    public void testApplyLeave() {
+	@Test
+	public void testApplyLeave() {
 
-        boolean result = dao.applyLeave(
-                1001,
-                "CL",
-                Date.valueOf("2026-02-10"),
-                Date.valueOf("2026-02-11"),
-                "JUnit Test Leave"
-        );
+		boolean result = dao.applyLeave(1001, "CL", Date.valueOf("2026-02-10"),
+				Date.valueOf("2026-02-11"), "JUnit Test Leave");
 
-        assertTrue(result);
-    }
+		assertTrue(result);
+	}
 
-    @Test
-    public void testGetNotifications() {
+	@Test
+	public void testGetNotifications() {
 
-        assertNotNull(dao.getNotifications(1001));
-    }
+		assertNotNull(dao.getNotifications(1001));
+	}
 
 }

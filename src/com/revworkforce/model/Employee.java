@@ -4,158 +4,153 @@ import java.util.Date;
 
 public class Employee {
 
-    private int empId;
-    private String name;
-    private String email;
-    private String password;
-    private String role;
-    private String phone;
-    private String address;
-    private Date doj;
-    private int managerId;
-    private String status;
-    private String emergencyContact;
-    private java.sql.Date dob;
-    private String department;
-    private String designation;
-    private double salary;
+	private int empId;
+	private String name;
+	private String email;
+	private String password;
+	private String role;
+	private String phone;
+	private String address;
+	private Date doj;
+	private int managerId;
+	private String status;
+	private String emergencyContact;
+	private java.sql.Date dob;
+	private String department;
+	private String designation;
+	private double salary;
 
+	// Default Constructor
+	public Employee() {
+	}
 
+	// Parameterized Constructor
+	public Employee(int empId, String name, String email, String role) {
+		this.empId = empId;
+		this.name = name;
+		this.email = email;
+		this.role = role;
+	}
 
-    // Default Constructor
-    public Employee() {
-    }
+	// Getters and Setters
+	public int getEmpId() {
+		return empId;
+	}
 
-    // Parameterized Constructor
-    public Employee(int empId, String name, String email, String role) {
-        this.empId = empId;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
+	public void setEmpId(int empId) {
+		this.empId = empId;
+	}
 
-    // Getters and Setters
-    public int getEmpId() {
-        return empId;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setEmpId(int empId) {
-        this.empId = empId;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getRole() {
+		return role;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setRole(String role) {
+		this.role = role;
+	}
 
-    public String getRole() {
-        return role;
-    }
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public Date getDoj() {
+		return doj;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public void setDoj(Date doj) {
+		this.doj = doj;
+	}
 
-    public Date getDoj() {
-        return doj;
-    }
+	public int getManagerId() {
+		return managerId;
+	}
 
-    public void setDoj(Date doj) {
-        this.doj = doj;
-    }
+	public void setManagerId(int managerId) {
+		this.managerId = managerId;
+	}
 
-    public int getManagerId() {
-        return managerId;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setManagerId(int managerId) {
-        this.managerId = managerId;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getEmergencyContact() {
+		return emergencyContact;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    public String getEmergencyContact() {
-        return emergencyContact;
-    }
+	public void setEmergencyContact(String emergencyContact) {
+		this.emergencyContact = emergencyContact;
+	}
 
-    public void setEmergencyContact(String emergencyContact) {
-        this.emergencyContact = emergencyContact;
-    }
-    
-    public java.sql.Date getDob() {
-        return dob;
-    }
+	public java.sql.Date getDob() {
+		return dob;
+	}
 
-    public void setDob(java.sql.Date dob) {
-        this.dob = dob;
-    }
+	public void setDob(java.sql.Date dob) {
+		this.dob = dob;
+	}
 
-    public String getDepartment() {
-        return department;
-    }
+	public String getDepartment() {
+		return department;
+	}
 
-    public void setDepartment(String department) {
-        this.department = department;
-    }
+	public void setDepartment(String department) {
+		this.department = department;
+	}
 
-    public String getDesignation() {
-        return designation;
-    }
+	public String getDesignation() {
+		return designation;
+	}
 
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
 
-    public double getSalary() {
-        return salary;
-    }
+	public double getSalary() {
+		return salary;
+	}
 
-    public void setSalary(double salary) {
-        this.salary = salary;
-    }
-    
-    
-
+	public void setSalary(double salary) {
+		this.salary = salary;
+	}
 
 }

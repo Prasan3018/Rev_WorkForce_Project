@@ -5,17 +5,17 @@ import com.revworkforce.model.Employee;
 
 public class AuthService {
 
-    private EmployeeDAO employeeDAO = new EmployeeDAO();
+	private EmployeeDAO employeeDAO = new EmployeeDAO();
 
-    // Login validation
-    public Employee login(int empId, String password) {
+	// Login validation
+	public Employee login(int empId, String password) {
 
-        Employee emp = employeeDAO.validateLogin(empId, password);
+		Employee emp = employeeDAO.validateLogin(empId, password);
 
-        if (emp != null && emp.getStatus().equalsIgnoreCase("ACTIVE")) {
-            return emp;
-        }
+		if (emp != null && emp.getStatus().equalsIgnoreCase("ACTIVE")) {
+			return emp;
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

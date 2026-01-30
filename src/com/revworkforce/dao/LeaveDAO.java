@@ -1,734 +1,698 @@
 package com.revworkforce.dao;
 
-import java.sql.Connection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.sql.Connection;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
 
 import com.revworkforce.util.DBConnection;
 
 public class LeaveDAO {
 
-    public boolean applyLeave(int empId, String leaveType,
-                              java.sql.Date fromDate,
-                              java.sql.Date toDate,
-                              String reason) {
+	private static final Logger logger = LogManager.getLogger(LeaveDAO.class);
 
-        boolean applied = false;
+	public boolean applyLeave(int empId, String leaveType,
+			java.sql.Date fromDate, java.sql.Date toDate, String reason) {
 
-        try {
-            Connection con = DBConnection.getConnection();
+		boolean applied = false;
 
-            PreparedStatement ps = con.prepareStatement(
-            	    "INSERT INTO LEAVE_REQUEST " +
-            	    "(LEAVE_ID, EMP_ID, LEAVE_TYPE, FROM_DATE, TO_DATE, STATUS, REASON, MANAGER_COMMENT) " +
-            	    "VALUES (LEAVE_SEQ.NEXTVAL, ?, ?, ?, ?, 'PENDING', ?, NULL)"
-            	);
+		try {
+			Connection con = DBConnection.getConnection();
 
+			PreparedStatement ps = con
+					.prepareStatement("INSERT INTO LEAVE_REQUEST "
+							+ "(LEAVE_ID, EMP_ID, LEAVE_TYPE, FROM_DATE, TO_DATE, STATUS, REASON, MANAGER_COMMENT) "
+							+ "VALUES (LEAVE_SEQ.NEXTVAL, ?, ?, ?, ?, 'PENDING', ?, NULL)");
 
-            ps.setInt(1, empId);
-            ps.setString(2, leaveType);
-            ps.setDate(3, fromDate);
-            ps.setDate(4, toDate);
-            ps.setString(5, reason);
+			ps.setInt(1, empId);
+			ps.setString(2, leaveType);
+			ps.setDate(3, fromDate);
+			ps.setDate(4, toDate);
+			ps.setString(5, reason);
 
-            int count = ps.executeUpdate();
+			int count = ps.executeUpdate();
 
-            if (count > 0) {
+			if (count > 0) {
 
-                applied = true;
+				applied = true;
+				logger.info("Leave applied by: " + empId);
 
-                // Fetch manager ID of employee
-                PreparedStatement ps2 = con.prepareStatement(
-                    "SELECT MANAGER_ID FROM EMPLOYEE WHERE EMP_ID=?"
-                );
+				// Fetch manager ID of employee
+				PreparedStatement ps2 = con
+						.prepareStatement("SELECT MANAGER_ID FROM EMPLOYEE WHERE EMP_ID=?");
 
-                ps2.setInt(1, empId);
+				ps2.setInt(1, empId);
 
-                ResultSet rs = ps2.executeQuery();
+				ResultSet rs = ps2.executeQuery();
 
-                if (rs.next()) {
+				if (rs.next()) {
 
-                    int managerId = rs.getInt("MANAGER_ID");
+					int managerId = rs.getInt("MANAGER_ID");
 
-                    // Send notification to manager
-                    addNotification(managerId,
-                        "Employee " + empId + " applied for a leave request."
-                    );
-                }
-            }
+					// Send notification to manager
+					addNotification(managerId, "Employee " + empId
+							+ " applied for a leave request.");
+				}
+			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return applied;
+	}
 
-        return applied;
-    }
-    
-    public ResultSet getPendingLeaves(int managerId) {
+	public ResultSet getPendingLeaves(int managerId) {
 
-        ResultSet rs = null;
+		ResultSet rs = null;
 
-        try {
-            Connection con = DBConnection.getConnection();
+		try {
+			Connection con = DBConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT L.LEAVE_ID, L.EMP_ID, L.LEAVE_TYPE, L.FROM_DATE, L.TO_DATE, L.REASON " +
-                "FROM LEAVE_REQUEST L JOIN EMPLOYEE E ON L.EMP_ID = E.EMP_ID " +
-                "WHERE E.MANAGER_ID = ? AND L.STATUS = 'PENDING'"
-            );
+			PreparedStatement ps = con
+					.prepareStatement("SELECT L.LEAVE_ID, L.EMP_ID, L.LEAVE_TYPE, L.FROM_DATE, L.TO_DATE, L.REASON "
+							+ "FROM LEAVE_REQUEST L JOIN EMPLOYEE E ON L.EMP_ID = E.EMP_ID "
+							+ "WHERE E.MANAGER_ID = ? AND L.STATUS = 'PENDING'");
 
-            ps.setInt(1, managerId);
-            rs = ps.executeQuery();
+			ps.setInt(1, managerId);
+			rs = ps.executeQuery();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return rs;
-    }
-    
-    public boolean updateLeaveStatus(int leaveId, String status, String comment) {
+		return rs;
+	}
 
-        boolean updated = false;
+	public boolean updateLeaveStatus(int leaveId, String status, String comment) {
 
-        try {
-            Connection con = DBConnection.getConnection();
+		boolean updated = false;
 
-            PreparedStatement ps = con.prepareStatement(
-                "UPDATE LEAVE_REQUEST SET STATUS=?, MANAGER_COMMENT=? WHERE LEAVE_ID=?"
-            );
+		try {
+			Connection con = DBConnection.getConnection();
 
-            ps.setString(1, status);
-            ps.setString(2, comment);
-            ps.setInt(3, leaveId);
+			PreparedStatement ps = con
+					.prepareStatement("UPDATE LEAVE_REQUEST SET STATUS=?, MANAGER_COMMENT=? WHERE LEAVE_ID=?");
 
-            int count = ps.executeUpdate();
+			ps.setString(1, status);
+			ps.setString(2, comment);
+			ps.setInt(3, leaveId);
 
-            if (count > 0) {
-                updated = true;
-            }
+			int count = ps.executeUpdate();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			if (count > 0) {
+				updated = true;
+			}
 
-        return updated;
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    
-    public ResultSet getEmployeeLeaves(int empId) {
+		return updated;
+	}
 
-        ResultSet rs = null;
+	public ResultSet getEmployeeLeaves(int empId) {
 
-        try {
-            Connection con = DBConnection.getConnection();
+		ResultSet rs = null;
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT LEAVE_ID, LEAVE_TYPE, FROM_DATE, TO_DATE, STATUS, REASON " +
-                "FROM LEAVE_REQUEST WHERE EMP_ID=?"
-            );
+		try {
+			Connection con = DBConnection.getConnection();
 
-            ps.setInt(1, empId);
-            rs = ps.executeQuery();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT LEAVE_ID, LEAVE_TYPE, FROM_DATE, TO_DATE, STATUS, REASON "
+							+ "FROM LEAVE_REQUEST WHERE EMP_ID=?");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			ps.setInt(1, empId);
+			rs = ps.executeQuery();
 
-        return rs;
-    }
-    
-    public ResultSet getHolidays() {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        ResultSet rs = null;
+		return rs;
+	}
 
-        try {
-            Connection con = DBConnection.getConnection();
+	public ResultSet getHolidays() {
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT HOLIDAY_DATE, HOLIDAY_NAME FROM HOLIDAYS ORDER BY HOLIDAY_DATE"
-            );
+		ResultSet rs = null;
 
-            rs = ps.executeQuery();
+		try {
+			Connection con = DBConnection.getConnection();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			PreparedStatement ps = con
+					.prepareStatement("SELECT HOLIDAY_DATE, HOLIDAY_NAME FROM HOLIDAYS ORDER BY HOLIDAY_DATE");
 
-        return rs;
-    }
-    
-    public boolean cancelLeave(int leaveId, int empId) {
+			rs = ps.executeQuery();
 
-        boolean cancelled = false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        try {
-            Connection con = DBConnection.getConnection();
+		return rs;
+	}
 
-            PreparedStatement ps = con.prepareStatement(
-                "DELETE FROM LEAVE_REQUEST WHERE LEAVE_ID=? AND EMP_ID=? AND STATUS='PENDING'"
-            );
+	public boolean cancelLeave(int leaveId, int empId) {
 
-            ps.setInt(1, leaveId);
-            ps.setInt(2, empId);
+		boolean cancelled = false;
 
-            int count = ps.executeUpdate();
+		try {
+			Connection con = DBConnection.getConnection();
 
-            if (count > 0) {
-                cancelled = true;
-            }
+			PreparedStatement ps = con
+					.prepareStatement("DELETE FROM LEAVE_REQUEST WHERE LEAVE_ID=? AND EMP_ID=? AND STATUS='PENDING'");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			ps.setInt(1, leaveId);
+			ps.setInt(2, empId);
 
-        return cancelled;
-    }
-    
-    public void addNotification(int empId, String message) {
+			int count = ps.executeUpdate();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			if (count > 0) {
+				cancelled = true;
+			}
 
-            PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO NOTIFICATIONS VALUES (NOTIF_SEQ.NEXTVAL, ?, ?, 'UNREAD', SYSDATE)"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setInt(1, empId);
-            ps.setString(2, message);
+		return cancelled;
+	}
 
-            ps.executeUpdate();
+	public void addNotification(int empId, String message) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public ResultSet getNotifications(int empId) {
+		try {
+			Connection con = DBConnection.getConnection();
 
-        ResultSet rs = null;
+			PreparedStatement ps = con
+					.prepareStatement("INSERT INTO NOTIFICATIONS VALUES (NOTIF_SEQ.NEXTVAL, ?, ?, 'UNREAD', SYSDATE)");
 
-        try {
-            Connection con = DBConnection.getConnection();
+			ps.setInt(1, empId);
+			ps.setString(2, message);
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT NOTIF_ID, MESSAGE, STATUS FROM NOTIFICATIONS WHERE EMP_ID=? ORDER BY CREATED_DATE DESC"
-            );
+			ps.executeUpdate();
 
-            ps.setInt(1, empId);
-            rs = ps.executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	public ResultSet getNotifications(int empId) {
 
-        return rs;
-    }
+		ResultSet rs = null;
 
-    public boolean submitReview(int empId,
-            String deliverables,
-            String accomplishments,
-            String improvements,
-            int rating) {
+		try {
+			Connection con = DBConnection.getConnection();
 
-        boolean submitted = false;
+			PreparedStatement ps = con
+					.prepareStatement("SELECT NOTIF_ID, MESSAGE, STATUS FROM NOTIFICATIONS WHERE EMP_ID=? ORDER BY CREATED_DATE DESC");
 
-        try {
-            Connection con = DBConnection.getConnection();
+			ps.setInt(1, empId);
+			rs = ps.executeQuery();
 
-            PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO PERFORMANCE_REVIEW VALUES " +
-                "(REVIEW_SEQ.NEXTVAL, ?, ?, ?, ?, ?, NULL, NULL, 'SUBMITTED')"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setInt(1, empId);
-            ps.setString(2, deliverables);
-            ps.setString(3, accomplishments);
-            ps.setString(4, improvements);
-            ps.setInt(5, rating);
+		return rs;
+	}
 
-            int count = ps.executeUpdate();
+	public boolean submitReview(int empId, String deliverables,
+			String accomplishments, String improvements, int rating) {
 
-            if (count > 0) {
-                submitted = true;
-            }
+		boolean submitted = false;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try {
+			Connection con = DBConnection.getConnection();
 
-        return submitted;
-    }
+			PreparedStatement ps = con
+					.prepareStatement("INSERT INTO PERFORMANCE_REVIEW VALUES "
+							+ "(REVIEW_SEQ.NEXTVAL, ?, ?, ?, ?, ?, NULL, NULL, 'SUBMITTED')");
 
+			ps.setInt(1, empId);
+			ps.setString(2, deliverables);
+			ps.setString(3, accomplishments);
+			ps.setString(4, improvements);
+			ps.setInt(5, rating);
 
-    public ResultSet getMyReview(int empId) {
+			int count = ps.executeUpdate();
 
-        ResultSet rs = null;
+			if (count > 0) {
+				submitted = true;
+			}
 
-        try {
-            Connection con = DBConnection.getConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT DELIVERABLES, ACCOMPLISHMENTS, IMPROVEMENTS, SELF_RATING, STATUS, MANAGER_FEEDBACK, MANAGER_RATING " +
-                "FROM PERFORMANCE_REVIEW WHERE EMP_ID=?"
-            );
+		return submitted;
+	}
 
-            ps.setInt(1, empId);
+	public ResultSet getMyReview(int empId) {
 
-            rs = ps.executeQuery();
+		ResultSet rs = null;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try {
+			Connection con = DBConnection.getConnection();
 
-        return rs;
-    }
-    
-    public boolean addGoal(int empId, String desc,
-            java.sql.Date deadline,
-            String priority,
-            String metrics) {
+			PreparedStatement ps = con
+					.prepareStatement("SELECT DELIVERABLES, ACCOMPLISHMENTS, IMPROVEMENTS, SELF_RATING, STATUS, MANAGER_FEEDBACK, MANAGER_RATING "
+							+ "FROM PERFORMANCE_REVIEW WHERE EMP_ID=?");
 
-        boolean added = false;
+			ps.setInt(1, empId);
 
-        try {
-            Connection con = DBConnection.getConnection();
+			rs = ps.executeQuery();
 
-            PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO GOALS VALUES (GOAL_SEQ.NEXTVAL, ?, ?, ?, ?, ?, 0)"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setInt(1, empId);
-            ps.setString(2, desc);
-            ps.setDate(3, deadline);
-            ps.setString(4, priority);
-            ps.setString(5, metrics);
+		return rs;
+	}
 
-            int count = ps.executeUpdate();
+	public boolean addGoal(int empId, String desc, java.sql.Date deadline,
+			String priority, String metrics) {
 
-            if (count > 0) {
-                added = true;
-            }
+		boolean added = false;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try {
+			Connection con = DBConnection.getConnection();
 
-        return added;
-    }
+			PreparedStatement ps = con
+					.prepareStatement("INSERT INTO GOALS VALUES (GOAL_SEQ.NEXTVAL, ?, ?, ?, ?, ?, 0)");
 
-    public ResultSet getGoals(int empId) {
+			ps.setInt(1, empId);
+			ps.setString(2, desc);
+			ps.setDate(3, deadline);
+			ps.setString(4, priority);
+			ps.setString(5, metrics);
 
-        ResultSet rs = null;
+			int count = ps.executeUpdate();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			if (count > 0) {
+				added = true;
+			}
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT GOAL_ID, GOAL_DESC, DEADLINE, PRIORITY, SUCCESS_METRICS, PROGRESS " +
-                "FROM GOALS WHERE EMP_ID=?"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setInt(1, empId);
-            rs = ps.executeQuery();
+		return added;
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	public ResultSet getGoals(int empId) {
 
-        return rs;
-    }
+		ResultSet rs = null;
 
-    public boolean updateGoalProgress(int goalId, int progress) {
+		try {
+			Connection con = DBConnection.getConnection();
 
-        boolean updated = false;
+			PreparedStatement ps = con
+					.prepareStatement("SELECT GOAL_ID, GOAL_DESC, DEADLINE, PRIORITY, SUCCESS_METRICS, PROGRESS "
+							+ "FROM GOALS WHERE EMP_ID=?");
 
-        try {
-            Connection con = DBConnection.getConnection();
+			ps.setInt(1, empId);
+			rs = ps.executeQuery();
 
-            PreparedStatement ps = con.prepareStatement(
-                "UPDATE GOALS SET PROGRESS=? WHERE GOAL_ID=?"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setInt(1, progress);
-            ps.setInt(2, goalId);
+		return rs;
+	}
 
-            int count = ps.executeUpdate();
+	public boolean updateGoalProgress(int goalId, int progress) {
 
-            if (count > 0) {
-                updated = true;
-            }
+		boolean updated = false;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try {
+			Connection con = DBConnection.getConnection();
 
-        return updated;
-    }
+			PreparedStatement ps = con
+					.prepareStatement("UPDATE GOALS SET PROGRESS=? WHERE GOAL_ID=?");
 
-    public ResultSet getSubmittedReviews(int managerId) {
+			ps.setInt(1, progress);
+			ps.setInt(2, goalId);
 
-        ResultSet rs = null;
+			int count = ps.executeUpdate();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			if (count > 0) {
+				updated = true;
+			}
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT R.REVIEW_ID, R.EMP_ID, R.DELIVERABLES, R.ACCOMPLISHMENTS, " +
-                "R.IMPROVEMENTS, R.SELF_RATING " +
-                "FROM PERFORMANCE_REVIEW R JOIN EMPLOYEE E " +
-                "ON R.EMP_ID = E.EMP_ID WHERE E.MANAGER_ID=? AND R.STATUS='SUBMITTED'"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setInt(1, managerId);
+		return updated;
+	}
 
-            rs = ps.executeQuery();
+	public ResultSet getSubmittedReviews(int managerId) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		ResultSet rs = null;
 
-        return rs;
-    }
+		try {
+			Connection con = DBConnection.getConnection();
 
-    public boolean addManagerFeedback(int reviewId,
-            String feedback, int rating) {
+			PreparedStatement ps = con
+					.prepareStatement("SELECT R.REVIEW_ID, R.EMP_ID, R.DELIVERABLES, R.ACCOMPLISHMENTS, "
+							+ "R.IMPROVEMENTS, R.SELF_RATING "
+							+ "FROM PERFORMANCE_REVIEW R JOIN EMPLOYEE E "
+							+ "ON R.EMP_ID = E.EMP_ID WHERE E.MANAGER_ID=? AND R.STATUS='SUBMITTED'");
 
-        boolean updated = false;
+			ps.setInt(1, managerId);
 
-        try {
-            Connection con = DBConnection.getConnection();
+			rs = ps.executeQuery();
 
-            PreparedStatement ps = con.prepareStatement(
-                "UPDATE PERFORMANCE_REVIEW SET MANAGER_FEEDBACK=?, " +
-                "MANAGER_RATING=?, STATUS='REVIEWED' WHERE REVIEW_ID=?"
-            );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            ps.setString(1, feedback);
-            ps.setInt(2, rating);
-            ps.setInt(3, reviewId);
+		return rs;
+	}
 
-            int count = ps.executeUpdate();
+	public boolean addManagerFeedback(int reviewId, String feedback, int rating) {
 
-            if (count > 0) updated = true;
+		boolean updated = false;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		try {
+			Connection con = DBConnection.getConnection();
 
-        return updated;
-    }
-    
-    public ResultSet getTeamMembers(int managerId) {
+			PreparedStatement ps = con
+					.prepareStatement("UPDATE PERFORMANCE_REVIEW SET MANAGER_FEEDBACK=?, "
+							+ "MANAGER_RATING=?, STATUS='REVIEWED' WHERE REVIEW_ID=?");
 
-        ResultSet rs = null;
+			ps.setString(1, feedback);
+			ps.setInt(2, rating);
+			ps.setInt(3, reviewId);
 
-        try {
-            Connection con = DBConnection.getConnection();
+			int count = ps.executeUpdate();
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT EMP_ID, NAME, EMAIL, ROLE, PHONE, STATUS " +
-                "FROM EMPLOYEE WHERE MANAGER_ID=?"
-            );
+			if (count > 0)
+				updated = true;
 
-            ps.setInt(1, managerId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-            rs = ps.executeQuery();
+		return updated;
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	public ResultSet getTeamMembers(int managerId) {
 
-        return rs;
-    }
-    
-    public ResultSet getTeamLeaveBalances(int managerId) {
+		ResultSet rs = null;
 
-        ResultSet rs = null;
+		try {
+			Connection con = DBConnection.getConnection();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT EMP_ID, NAME, EMAIL, ROLE, PHONE, STATUS "
+							+ "FROM EMPLOYEE WHERE MANAGER_ID=?");
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT E.EMP_ID, E.NAME, L.CL, L.SL, L.PL " +
-                "FROM EMPLOYEE E JOIN LEAVE_BALANCE L " +
-                "ON E.EMP_ID = L.EMP_ID " +
-                "WHERE E.MANAGER_ID=?"
-            );
+			ps.setInt(1, managerId);
 
-            ps.setInt(1, managerId);
+			rs = ps.executeQuery();
 
-            rs = ps.executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return rs;
+	}
 
-        return rs;
-    }
+	public ResultSet getTeamLeaveBalances(int managerId) {
 
-    public ResultSet getTeamGoals(int managerId) {
+		ResultSet rs = null;
 
-        ResultSet rs = null;
+		try {
+			Connection con = DBConnection.getConnection();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT E.EMP_ID, E.NAME, L.CL, L.SL, L.PL "
+							+ "FROM EMPLOYEE E JOIN LEAVE_BALANCE L "
+							+ "ON E.EMP_ID = L.EMP_ID "
+							+ "WHERE E.MANAGER_ID=?");
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT G.GOAL_ID, G.EMP_ID, G.GOAL_DESC, G.DEADLINE, " +
-                "G.PRIORITY, G.PROGRESS " +
-                "FROM GOALS G JOIN EMPLOYEE E " +
-                "ON G.EMP_ID = E.EMP_ID " +
-                "WHERE E.MANAGER_ID=?"
-            );
+			ps.setInt(1, managerId);
 
-            ps.setInt(1, managerId);
+			rs = ps.executeQuery();
 
-            rs = ps.executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return rs;
+	}
 
-        return rs;
-    }
+	public ResultSet getTeamGoals(int managerId) {
 
-    public ResultSet getTeamPerformanceSummary(int managerId) {
+		ResultSet rs = null;
 
-        ResultSet rs = null;
+		try {
+			Connection con = DBConnection.getConnection();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT G.GOAL_ID, G.EMP_ID, G.GOAL_DESC, G.DEADLINE, "
+							+ "G.PRIORITY, G.PROGRESS "
+							+ "FROM GOALS G JOIN EMPLOYEE E "
+							+ "ON G.EMP_ID = E.EMP_ID "
+							+ "WHERE E.MANAGER_ID=?");
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT E.EMP_ID, E.NAME, R.SELF_RATING, " +
-                "R.MANAGER_RATING, R.STATUS " +
-                "FROM EMPLOYEE E JOIN PERFORMANCE_REVIEW R " +
-                "ON E.EMP_ID = R.EMP_ID " +
-                "WHERE E.MANAGER_ID=?"
-            );
+			ps.setInt(1, managerId);
 
-            ps.setInt(1, managerId);
+			rs = ps.executeQuery();
 
-            rs = ps.executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return rs;
+	}
 
-        return rs;
-    }
+	public ResultSet getTeamPerformanceSummary(int managerId) {
 
-    public ResultSet getTeamLeaveCalendar(int managerId) {
+		ResultSet rs = null;
 
-        ResultSet rs = null;
+		try {
+			Connection con = DBConnection.getConnection();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT E.EMP_ID, E.NAME, R.SELF_RATING, "
+							+ "R.MANAGER_RATING, R.STATUS "
+							+ "FROM EMPLOYEE E JOIN PERFORMANCE_REVIEW R "
+							+ "ON E.EMP_ID = R.EMP_ID "
+							+ "WHERE E.MANAGER_ID=?");
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT E.EMP_ID, E.NAME, L.FROM_DATE, L.TO_DATE, " +
-                "L.LEAVE_TYPE, L.STATUS " +
-                "FROM LEAVE_REQUEST L JOIN EMPLOYEE E " +
-                "ON L.EMP_ID = E.EMP_ID " +
-                "WHERE E.MANAGER_ID=? AND L.STATUS='APPROVED' " +
-                "ORDER BY L.FROM_DATE"
-            );
+			ps.setInt(1, managerId);
 
-            ps.setInt(1, managerId);
+			rs = ps.executeQuery();
 
-            rs = ps.executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return rs;
+	}
 
-        return rs;
-    }
+	public ResultSet getTeamLeaveCalendar(int managerId) {
 
-    public ResultSet getTeamHierarchy(int managerId) {
+		ResultSet rs = null;
 
-        ResultSet rs = null;
+		try {
+			Connection con = DBConnection.getConnection();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT E.EMP_ID, E.NAME, L.FROM_DATE, L.TO_DATE, "
+							+ "L.LEAVE_TYPE, L.STATUS "
+							+ "FROM LEAVE_REQUEST L JOIN EMPLOYEE E "
+							+ "ON L.EMP_ID = E.EMP_ID "
+							+ "WHERE E.MANAGER_ID=? AND L.STATUS='APPROVED' "
+							+ "ORDER BY L.FROM_DATE");
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT EMP_ID, NAME FROM EMPLOYEE WHERE MANAGER_ID=?"
-            );
+			ps.setInt(1, managerId);
 
-            ps.setInt(1, managerId);
-            rs = ps.executeQuery();
+			rs = ps.executeQuery();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        return rs;
-    }
+		return rs;
+	}
 
-    public ResultSet getTeamAttendanceSummary(int managerId) {
+	public ResultSet getTeamHierarchy(int managerId) {
 
-        ResultSet rs = null;
+		ResultSet rs = null;
 
-        try {
-            Connection con = DBConnection.getConnection();
+		try {
+			Connection con = DBConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT E.EMP_ID, E.NAME, " +
-                "SUM(CASE WHEN A.STATUS='PRESENT' THEN 1 ELSE 0 END) AS PRESENT_DAYS, " +
-                "SUM(CASE WHEN A.STATUS='ABSENT' THEN 1 ELSE 0 END) AS ABSENT_DAYS " +
-                "FROM EMPLOYEE E JOIN ATTENDANCE A " +
-                "ON E.EMP_ID = A.EMP_ID " +
-                "WHERE E.MANAGER_ID=? " +
-                "GROUP BY E.EMP_ID, E.NAME"
-            );
+			PreparedStatement ps = con
+					.prepareStatement("SELECT EMP_ID, NAME FROM EMPLOYEE WHERE MANAGER_ID=?");
 
-            ps.setInt(1, managerId);
+			ps.setInt(1, managerId);
+			rs = ps.executeQuery();
 
-            rs = ps.executeQuery();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return rs;
+	}
 
-        return rs;
-    }
+	public ResultSet getTeamAttendanceSummary(int managerId) {
 
-    public boolean revokeLeave(int leaveId) {
+		ResultSet rs = null;
 
-        boolean revoked = false;
+		try {
+			Connection con = DBConnection.getConnection();
 
-        try {
-            Connection con = DBConnection.getConnection();
+			PreparedStatement ps = con
+					.prepareStatement("SELECT E.EMP_ID, E.NAME, "
+							+ "SUM(CASE WHEN A.STATUS='PRESENT' THEN 1 ELSE 0 END) AS PRESENT_DAYS, "
+							+ "SUM(CASE WHEN A.STATUS='ABSENT' THEN 1 ELSE 0 END) AS ABSENT_DAYS "
+							+ "FROM EMPLOYEE E JOIN ATTENDANCE A "
+							+ "ON E.EMP_ID = A.EMP_ID "
+							+ "WHERE E.MANAGER_ID=? "
+							+ "GROUP BY E.EMP_ID, E.NAME");
 
-            PreparedStatement ps = con.prepareStatement(
-                "DELETE FROM LEAVE_REQUEST WHERE LEAVE_ID=? AND STATUS='APPROVED'"
-            );
+			ps.setInt(1, managerId);
 
-            ps.setInt(1, leaveId);
+			rs = ps.executeQuery();
 
-            if (ps.executeUpdate() > 0)
-                revoked = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		return rs;
+	}
 
-        return revoked;
-    }
-    
-    public ResultSet getAllLeaves() {
+	public boolean revokeLeave(int leaveId) {
 
-        ResultSet rs = null;
+		boolean revoked = false;
 
-        try {
-            Connection con = DBConnection.getConnection();
+		try {
+			Connection con = DBConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT LEAVE_ID, EMP_ID, LEAVE_TYPE, FROM_DATE, TO_DATE, STATUS FROM LEAVE_REQUEST"
-            );
+			PreparedStatement ps = con
+					.prepareStatement("DELETE FROM LEAVE_REQUEST WHERE LEAVE_ID=? AND STATUS='APPROVED'");
 
-            rs = ps.executeQuery();
+			ps.setInt(1, leaveId);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			if (ps.executeUpdate() > 0)
+				revoked = true;
 
-        return rs;
-    }
-    
-    public ResultSet getLeaveReportByDepartment() {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        ResultSet rs = null;
+		return revoked;
+	}
 
-        try {
-            Connection con = DBConnection.getConnection();
+	public ResultSet getAllLeaves() {
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT E.DEPARTMENT, COUNT(L.LEAVE_ID) AS TOTAL_LEAVES " +
-                "FROM EMPLOYEE E JOIN LEAVE_REQUEST L ON E.EMP_ID = L.EMP_ID " +
-                "GROUP BY E.DEPARTMENT"
-            );
+		ResultSet rs = null;
 
-            rs = ps.executeQuery();
+		try {
+			Connection con = DBConnection.getConnection();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			PreparedStatement ps = con
+					.prepareStatement("SELECT LEAVE_ID, EMP_ID, LEAVE_TYPE, FROM_DATE, TO_DATE, STATUS FROM LEAVE_REQUEST");
 
-        return rs;
-    }
+			rs = ps.executeQuery();
 
-    public ResultSet getLeaveReportByEmployee() {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        ResultSet rs = null;
+		return rs;
+	}
 
-        try {
-            Connection con = DBConnection.getConnection();
+	public ResultSet getLeaveReportByDepartment() {
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT EMP_ID, COUNT(LEAVE_ID) AS TOTAL_LEAVES " +
-                "FROM LEAVE_REQUEST GROUP BY EMP_ID"
-            );
+		ResultSet rs = null;
 
-            rs = ps.executeQuery();
+		try {
+			Connection con = DBConnection.getConnection();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			PreparedStatement ps = con
+					.prepareStatement("SELECT E.DEPARTMENT, COUNT(L.LEAVE_ID) AS TOTAL_LEAVES "
+							+ "FROM EMPLOYEE E JOIN LEAVE_REQUEST L ON E.EMP_ID = L.EMP_ID "
+							+ "GROUP BY E.DEPARTMENT");
 
-        return rs;
-    }
+			rs = ps.executeQuery();
 
-    public boolean addLeavePolicy(String type, int maxDays, String paid, String carry) {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        boolean added = false;
+		return rs;
+	}
 
-        try {
-            Connection con = DBConnection.getConnection();
+	public ResultSet getLeaveReportByEmployee() {
 
-            PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO LEAVE_POLICY VALUES (POLICY_SEQ.NEXTVAL, ?, ?, ?, ?)"
-            );
+		ResultSet rs = null;
 
-            ps.setString(1, type);
-            ps.setInt(2, maxDays);
-            ps.setString(3, paid);
-            ps.setString(4, carry);
+		try {
+			Connection con = DBConnection.getConnection();
 
-            if (ps.executeUpdate() > 0)
-                added = true;
+			PreparedStatement ps = con
+					.prepareStatement("SELECT EMP_ID, COUNT(LEAVE_ID) AS TOTAL_LEAVES "
+							+ "FROM LEAVE_REQUEST GROUP BY EMP_ID");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			rs = ps.executeQuery();
 
-        return added;
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    public ResultSet getLeavePolicies() {
+		return rs;
+	}
 
-        ResultSet rs = null;
+	public boolean addLeavePolicy(String type, int maxDays, String paid,
+			String carry) {
 
-        try {
-            Connection con = DBConnection.getConnection();
+		boolean added = false;
 
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT LEAVE_TYPE, MAX_DAYS, IS_PAID, CARRY_FORWARD FROM LEAVE_POLICY"
-            );
+		try {
+			Connection con = DBConnection.getConnection();
 
-            rs = ps.executeQuery();
+			PreparedStatement ps = con
+					.prepareStatement("INSERT INTO LEAVE_POLICY VALUES (POLICY_SEQ.NEXTVAL, ?, ?, ?, ?)");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+			ps.setString(1, type);
+			ps.setInt(2, maxDays);
+			ps.setString(3, paid);
+			ps.setString(4, carry);
 
-        return rs;
-    }
+			if (ps.executeUpdate() > 0)
+				added = true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return added;
+	}
+
+	public ResultSet getLeavePolicies() {
+
+		ResultSet rs = null;
+
+		try {
+			Connection con = DBConnection.getConnection();
+
+			PreparedStatement ps = con
+					.prepareStatement("SELECT LEAVE_TYPE, MAX_DAYS, IS_PAID, CARRY_FORWARD FROM LEAVE_POLICY");
+
+			rs = ps.executeQuery();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return rs;
+	}
 
 }

@@ -9,23 +9,23 @@ import com.revworkforce.model.Employee;
 
 public class EmployeeServiceTest {
 
-    EmployeeService service = new EmployeeService();
+	EmployeeService service = new EmployeeService();
 
-    @Test
-    public void testViewProfile() {
+	@Test
+	public void testViewProfile() {
 
-        Employee emp = service.viewProfile(1001);
+		Employee emp = service.viewProfile(1001);
 
-        assertNotNull(emp);
-        assertEquals(1001, emp.getEmpId());
-    }
+		assertNotNull(emp);
+		assertEquals(1001, emp.getEmpId());
+	}
 
-    @Test
-    public void testAssignLeaveBalance() {
+	@Test
+	public void testAssignLeaveBalance() {
 
-        boolean result = service.assignLeaveBalance(1001, 5, 5, 5, 0);
+		boolean result = service.assignLeaveBalance(1001, 5, 5, 5, 0);
 
-        assertTrue(result);
-    }
+		assertTrue(result);
+	}
 
 }

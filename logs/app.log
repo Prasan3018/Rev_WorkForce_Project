@@ -1,0 +1,17 @@
+2026-01-30 12:08:50 INFO  RevWorkForceApp - Login successful
+2026-01-30 12:08:50 INFO  RevWorkForceApp - User logged in: 1001 Role: EMPLOYEE
+2026-01-30 12:47:56 INFO  RevWorkForceApp - Application started
+2026-01-30 12:48:51 INFO  RevWorkForceApp - Application started
+2026-01-30 12:49:34 INFO  RevWorkForceApp - Application started
+2026-01-30 12:49:43 INFO  RevWorkForceApp - Login successful
+2026-01-30 12:49:43 INFO  RevWorkForceApp - User logged in: 1001 Role: EMPLOYEE
+2026-01-30 12:51:31 INFO  RevWorkForceApp - Application started
+2026-01-30 12:51:44 WARN  RevWorkForceApp - Invalid login attempt
+2026-01-30 12:52:02 INFO  RevWorkForceApp - Application started
+2026-01-30 12:52:18 INFO  RevWorkForceApp - Login successful
+2026-01-30 12:52:18 INFO  RevWorkForceApp - User logged in: 1001 Role: EMPLOYEE
+2026-01-30 12:52:42 INFO  RevWorkForceApp - Application started
+2026-01-30 12:52:52 WARN  RevWorkForceApp - Invalid login attempt
+2026-01-30 12:53:01 INFO  RevWorkForceApp - Application started
+2026-01-30 12:53:07 INFO  RevWorkForceApp - Login successful
+2026-01-30 12:53:07 INFO  RevWorkForceApp - User logged in: 1001 Role: EMPLOYEE
