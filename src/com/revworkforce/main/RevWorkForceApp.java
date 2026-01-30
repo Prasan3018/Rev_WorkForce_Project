@@ -18,48 +18,70 @@ public class RevWorkForceApp {
 			.getLogger(RevWorkForceApp.class);
 
 	public static void main(String[] args) {
-		logger.info("Application started");
 
+	    logger.info("Application started");
 
-		Scanner sc = new Scanner(System.in);
-		AuthService authService = new AuthService();
+	    Scanner sc = new Scanner(System.in);
+	    AuthService authService = new AuthService();
 
-		System.out.println("=================================");
-		System.out.println("      Welcome to RevWorkForce     ");
-		System.out.println("=================================");
+	    while (true) {   
 
+	        System.out.println("=================================");
+	        System.out.println("      Welcome to RevWorkForce     ");
+	        System.out.println("=================================");
+	        System.out.println("1. Login");
+	        System.out.println("0. Exit");
 
-		int empId = InputUtil.getInt(sc, "Enter Employee ID: ");
+	        int mainChoice = InputUtil.getInt(sc, "Enter choice: ");
 
+	        if (mainChoice == 0) {
+	            logger.info("Application closed by user");
+	            System.out.println("user logged out successfully..!");
+	            break;   
+	        }
 
-		String password = InputUtil.getString(sc, "Enter Password: ");
+	        if (mainChoice != 1) {
+	            System.out.println("Invalid option. Try again.");
+	            continue;
+	        }
 
-		Employee emp = authService.login(empId, password);
+	        int empId = InputUtil.getInt(sc, "Enter Your ID: ");
+	        String password = InputUtil.getString(sc, "Enter Password: ");
 
-		if (emp == null) {
-			logger.warn("Invalid login attempt");
-			System.out.println("Invalid credentials or inactive account.");
-		} else {
-			logger.info("Login successful");
-			System.out.println("Login successful!");
-			System.out.println("Welcome " + emp.getName());
+	        Employee emp = authService.login(empId, password);
 
-			logger.info("User logged in: " + emp.getEmpId() + " Role: "
-					+ emp.getRole());
+	        if (emp == null) {
 
-			String role = emp.getRole();
+	            logger.warn("Invalid login attempt for ID: " + empId);
+	            System.out.println("Invalid credentials or inactive account.");
+	            continue;   
 
-			if (role.equalsIgnoreCase("EMPLOYEE")) {
-				new EmployeeMenu().showMenu(emp);
+	        } else {
 
-			} else if (role.equalsIgnoreCase("MANAGER")) {
-				new ManagerMenu().showMenu(emp);
+	            logger.info("Login successful for ID: " + empId);
+	            System.out.println("Login successful!");
+	            System.out.println("Welcome " + emp.getName());
 
-			} else if (role.equalsIgnoreCase("ADMIN")) {
-				new AdminMenu().showMenu();
-			}
-		}
+	            String role = emp.getRole();
 
-		sc.close();
+	            logger.info("Role detected: " + role);
+
+	            if (role.equalsIgnoreCase("EMPLOYEE")) {
+	                new EmployeeMenu().showMenu(emp);
+
+	            } else if (role.equalsIgnoreCase("MANAGER")) {
+	                new ManagerMenu().showMenu(emp);
+
+	            } else if (role.equalsIgnoreCase("ADMIN")) {
+	                new AdminMenu().showMenu();
+	            }
+
+	            
+	        }
+	    }
+
+	    sc.close();
 	}
+	
 }
+
