@@ -182,10 +182,11 @@ public class EmployeeDAO {
             Connection con = DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
-            		 "INSERT INTO EMPLOYEE " +
-            		 "(EMP_ID, NAME, EMAIL, PASSWORD, ROLE, PHONE, ADDRESS, JOINING_DATE, MANAGER_ID, STATUS, DOB, DEPARTMENT, DESIGNATION, SALARY) " +
-            		 "VALUES (?, ?, ?, ?, ?, ?, ?, SYSDATE, ?, 'ACTIVE', ?, ?, ?, ?)"
-            		);
+            	    "INSERT INTO EMPLOYEE " +
+            	    "(EMP_ID, NAME, EMAIL, PASSWORD, ROLE, PHONE, ADDRESS, JOINING_DATE, MANAGER_ID, STATUS, DOB, DEPARTMENT, DESIGNATION, SALARY, SECURITY_QUESTION, SECURITY_ANSWER) " +
+            	    "VALUES (?, ?, ?, ?, ?, ?, ?, SYSDATE, ?, 'ACTIVE', ?, ?, ?, ?, ?, ?)"
+            	);
+
 
 
             ps.setInt(1, emp.getEmpId());
@@ -200,6 +201,8 @@ public class EmployeeDAO {
             ps.setString(10, emp.getDepartment());
             ps.setString(11, emp.getDesignation());
             ps.setDouble(12, emp.getSalary());
+            ps.setString(13, emp.getSecurityQuestion());
+            ps.setString(14, emp.getSecurityAnswer());
 
             int count = ps.executeUpdate();
 
@@ -425,6 +428,54 @@ public class EmployeeDAO {
         }
 
         return updated;
+    }
+    
+    public boolean changePassword(int empId, String oldPass, String newPass) {
+
+        boolean updated = false;
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE EMPLOYEE SET PASSWORD=? WHERE EMP_ID=? AND PASSWORD=?"
+            );
+
+            ps.setString(1, newPass);
+            ps.setInt(2, empId);
+            ps.setString(3, oldPass);
+
+            if (ps.executeUpdate() > 0) {
+                updated = true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return updated;
+    }
+
+    public boolean resetPassword(int empId, String answer, String newPassword) {
+
+        try {
+            Connection con = DBConnection.getConnection();
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE EMPLOYEE SET PASSWORD=? WHERE EMP_ID=? AND SECURITY_ANSWER=?"
+            );
+
+            ps.setString(1, newPassword);
+            ps.setInt(2, empId);
+            ps.setString(3, answer);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 }

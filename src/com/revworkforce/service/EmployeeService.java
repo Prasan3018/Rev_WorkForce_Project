@@ -130,5 +130,13 @@ public class EmployeeService {
 	public ResultSet viewLeavePolicies() {
 		return leaveDAO.getLeavePolicies();
 	}
+	
+	public boolean changePassword(int empId, String oldPass, String newPass) {
+	    return employeeDAO.changePassword(empId, oldPass, newPass);
+	}
+
+	public boolean forgotPassword(int empId, String answer, String newPassword) {
+	    return employeeDAO.resetPassword(empId, answer, newPassword);
+	}
 
 }

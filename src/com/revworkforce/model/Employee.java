@@ -19,6 +19,9 @@ public class Employee {
 	private String department;
 	private String designation;
 	private double salary;
+	private String securityQuestion;
+	private String securityAnswer;
+
 
 	// Default Constructor
 	public Employee() {
@@ -152,5 +155,22 @@ public class Employee {
 	public void setSalary(double salary) {
 		this.salary = salary;
 	}
+	
+	public String getSecurityQuestion() {
+	    return securityQuestion;
+	}
+
+	public void setSecurityQuestion(String securityQuestion) {
+	    this.securityQuestion = securityQuestion;
+	}
+
+	public String getSecurityAnswer() {
+	    return securityAnswer;
+	}
+
+	public void setSecurityAnswer(String securityAnswer) {
+	    this.securityAnswer = securityAnswer;
+	}
+
 
 }

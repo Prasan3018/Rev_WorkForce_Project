@@ -67,6 +67,13 @@ public class AdminMenu {
 
 				System.out.print("Enter Manager ID: ");
 				emp.setManagerId(sc.nextInt());
+				
+				System.out.print("Enter security question: ");
+				emp.setSecurityQuestion(sc.nextLine());
+
+				System.out.print("Enter security answer: ");
+				emp.setSecurityAnswer(sc.nextLine());
+
 
 				boolean result = employeeService.addEmployee(emp);
 

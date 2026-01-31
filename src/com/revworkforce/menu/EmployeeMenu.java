@@ -1,6 +1,8 @@
 package com.revworkforce.menu;
 
 import java.util.Scanner;
+import com.revworkforce.util.InputUtil;
+
 
 import com.revworkforce.model.Employee;
 import com.revworkforce.service.EmployeeService;
@@ -29,6 +31,8 @@ public class EmployeeMenu {
 			System.out.println("12. Add Goal");
 			System.out.println("13. View Goals");
 			System.out.println("14. Update Goal Progress");
+			System.out.println("15. Change Password");
+
 
 			System.out.println("0. Logout");
 			System.out.print("Enter choice: ");
@@ -422,6 +426,30 @@ public class EmployeeMenu {
 
 				break;
 			}
+			
+			case 15: {
+
+			    String oldPass = InputUtil.getString(sc, "Enter current password: ");
+			    String newPass = InputUtil.getString(sc, "Enter new password: ");
+			    String confirm = InputUtil.getString(sc, "Confirm new password: ");
+
+			    if (!newPass.equals(confirm)) {
+			        System.out.println("Passwords do not match!");
+			        break;
+			    }
+
+			    boolean changed = employeeService.changePassword(
+			            emp.getEmpId(), oldPass, newPass);
+
+			    if (changed) {
+			        System.out.println("Password changed successfully.");
+			    } else {
+			        System.out.println("Wrong current password.");
+			    }
+
+			    break;
+			}
+
 
 			case 0:
 				System.out.println("Logged out successfully.");
