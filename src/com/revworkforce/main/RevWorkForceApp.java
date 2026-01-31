@@ -1,6 +1,9 @@
 package com.revworkforce.main;
 
+import com.revworkforce.util.SessionUtil;
 import org.apache.logging.log4j.LogManager;
+import com.revworkforce.service.EmployeeService;
+
 import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
@@ -23,6 +26,10 @@ public class RevWorkForceApp {
 
 		Scanner sc = new Scanner(System.in);
 		AuthService authService = new AuthService();
+		
+		
+		
+
 
 		while (true) {
 
@@ -109,6 +116,19 @@ public class RevWorkForceApp {
 				logger.info("Login successful for ID: " + empId);
 				System.out.println("Login successful!");
 				System.out.println("Welcome " + emp.getName());
+				
+				SessionUtil.updateActivity();
+				
+				new EmployeeService().logAction(emp.getEmpId(), "User logged in");
+
+				
+				EmployeeService es = new EmployeeService();
+				int unread = es.getUnreadNotificationCount(emp.getEmpId());
+
+				if (unread > 0) {
+				    System.out.println("You have " + unread + " unread notifications.");
+				}
+
 
 				String role = emp.getRole();
 				logger.info("Role detected: " + role);

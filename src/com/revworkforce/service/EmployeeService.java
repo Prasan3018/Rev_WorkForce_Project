@@ -1,5 +1,6 @@
 package com.revworkforce.service;
 
+import com.revworkforce.dao.AuditDAO;
 import com.revworkforce.dao.EmployeeDAO;
 import com.revworkforce.model.Employee;
 import com.revworkforce.dao.LeaveDAO;
@@ -8,6 +9,8 @@ import java.sql.ResultSet;
 public class EmployeeService {
 
 	private EmployeeDAO employeeDAO = new EmployeeDAO();
+	private AuditDAO auditDAO = new AuditDAO();
+
 
 	// View employee profile
 	public Employee viewProfile(int empId) {
@@ -138,5 +141,26 @@ public class EmployeeService {
 	public boolean forgotPassword(int empId, String answer, String newPassword) {
 	    return employeeDAO.resetPassword(empId, answer, newPassword);
 	}
+	
+	public int getUnreadNotificationCount(int empId) {
+	    return leaveDAO.getUnreadNotificationCount(empId);
+	}
+	
+	public void markNotificationsRead(int empId) {
+	    leaveDAO.markNotificationsRead(empId);
+	}
+	
+	public void logAction(int empId, String action) {
+	    auditDAO.logAction(empId, action);
+	}
+
+	public boolean postAnnouncement(String message) {
+	    return leaveDAO.addAnnouncement(message);
+	}
+
+	
+
+
+
 
 }

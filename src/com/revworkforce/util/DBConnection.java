@@ -5,22 +5,30 @@ import java.sql.DriverManager;
 
 public class DBConnection {
 
-	private static Connection con;
+    private static Connection con = null;
 
-	public static Connection getConnection() {
+    private DBConnection() {
+    }
 
-		try {
-			// Load Oracle JDBC Driver
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+    public static Connection getConnection() {
 
-			// Create Connection
-			con = DriverManager.getConnection(
-					"jdbc:oracle:thin:@localhost:1521:XE", "system", "admin");
+        try {
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+            if (con == null || con.isClosed()) {
 
-		return con;
-	}
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+
+                con = DriverManager.getConnection(
+                        "jdbc:oracle:thin:@localhost:1521:xe",
+                        "system",
+                        "admin"
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return con;
+    }
 }

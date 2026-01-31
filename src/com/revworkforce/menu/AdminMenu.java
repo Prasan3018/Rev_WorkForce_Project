@@ -1,6 +1,10 @@
 package com.revworkforce.menu;
 
+import com.revworkforce.util.SessionUtil;
+
 import java.util.Scanner;
+import com.revworkforce.service.AdminService;
+import com.revworkforce.service.SystemConfigService;
 
 import com.revworkforce.model.Employee;
 import com.revworkforce.service.EmployeeService;
@@ -9,12 +13,22 @@ import java.sql.ResultSet;
 public class AdminMenu {
 
 	private EmployeeService employeeService = new EmployeeService();
+	private AdminService adminService = new AdminService();
+	private SystemConfigService systemService = new SystemConfigService();
 
 	public void showMenu() {
 
 		Scanner sc = new Scanner(System.in);
 
 		while (true) {
+			
+			if (SessionUtil.isSessionExpired()) {
+                System.out.println("Session expired due to inactivity.");
+                return;
+            }
+            SessionUtil.updateActivity();
+			
+			
 			System.out.println("\n===== Admin Menu =====");
 			System.out.println("1. Add Employee");
 			System.out.println("2. Update Employee");
@@ -31,6 +45,18 @@ public class AdminMenu {
 			System.out.println("13. Leave Report By Employee");
 			System.out.println("14. Add Leave Policy");
 			System.out.println("15. View Leave Policies");
+			System.out.println("16. View Audit Logs");
+			System.out.println("17. Add Department");
+			System.out.println("18. View Departments");
+			System.out.println("19. Add Designation");
+			System.out.println("20. View Designations");
+			System.out.println("21. Add Performance Review Cycle");
+			System.out.println("22. View Review Cycles");
+			System.out.println("23. Add System Policy");
+			System.out.println("24. View System Policies");
+			System.out.println("25. Post System Announcement");
+
+
 			System.out.println("0. Logout");
 			System.out.print("Enter choice: ");
 
@@ -67,13 +93,12 @@ public class AdminMenu {
 
 				System.out.print("Enter Manager ID: ");
 				emp.setManagerId(sc.nextInt());
-				
+
 				System.out.print("Enter security question: ");
 				emp.setSecurityQuestion(sc.nextLine());
 
 				System.out.print("Enter security answer: ");
 				emp.setSecurityAnswer(sc.nextLine());
-
 
 				boolean result = employeeService.addEmployee(emp);
 
@@ -342,6 +367,172 @@ public class AdminMenu {
 					e.printStackTrace();
 				}
 				break;
+
+			case 16:
+				try {
+					ResultSet rs = adminService.viewAuditLogs();
+
+					System.out.println("\nLOG_ID | EMP_ID | ACTION | TIME");
+
+					while (rs.next()) {
+						System.out.println(rs.getInt("LOG_ID") + " | "
+								+ rs.getInt("EMP_ID") + " | "
+								+ rs.getString("ACTION") + " | "
+								+ rs.getDate("LOG_TIME"));
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+
+			case 17:
+				System.out.print("Dept ID: ");
+				int did = sc.nextInt();
+				sc.nextLine();
+
+				System.out.print("Dept Name: ");
+				String dname = sc.nextLine();
+
+				System.out
+						.println(systemService.addDepartment(did, dname) ? "Department added"
+								: "Failed");
+				break;
+
+			case 18:
+				try {
+					ResultSet dr = systemService.viewDepartments();
+
+					System.out.println("ID | NAME");
+
+					while (dr.next()) {
+						System.out.println(dr.getInt("DEPT_ID") + " | "
+								+ dr.getString("DEPT_NAME"));
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+
+			case 19:
+				System.out.print("Designation ID: ");
+				int desid = sc.nextInt();
+				sc.nextLine();
+
+				System.out.print("Designation Name: ");
+				String desname = sc.nextLine();
+
+				System.out.print("Department ID: ");
+				int dept = sc.nextInt();
+
+				System.out.println(systemService.addDesignation(desid, desname,
+						dept) ? "Designation added" : "Failed");
+				break;
+
+			case 20:
+				try {
+					ResultSet ds = systemService.viewDesignations();
+
+					System.out.println("ID | NAME | DEPT");
+
+					while (ds.next()) {
+						System.out.println(ds.getInt("DESIG_ID") + " | "
+								+ ds.getString("DESIG_NAME") + " | "
+								+ ds.getInt("DEPT_ID"));
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+
+			case 21:
+				System.out.print("Cycle ID: ");
+				int cid = sc.nextInt();
+				sc.nextLine();
+
+				System.out.print("Cycle Name: ");
+				String cname = sc.nextLine();
+
+				System.out.print("Start Date (yyyy-mm-dd): ");
+				String sd = sc.nextLine();
+
+				System.out.print("End Date (yyyy-mm-dd): ");
+				String ed = sc.nextLine();
+
+				java.sql.Date start = java.sql.Date.valueOf(sd);
+				java.sql.Date end = java.sql.Date.valueOf(ed);
+
+				boolean cr = systemService.addReviewCycle(cid, cname, start,
+						end);
+
+				System.out.println(cr ? "Cycle added" : "Failed");
+				break;
+
+			case 22:
+				try {
+					ResultSet rc = systemService.viewReviewCycles();
+
+					System.out.println("ID | NAME | START | END | STATUS");
+
+					while (rc.next()) {
+						System.out.println(rc.getInt("CYCLE_ID") + " | "
+								+ rc.getString("CYCLE_NAME") + " | "
+								+ rc.getDate("START_DATE") + " | "
+								+ rc.getDate("END_DATE") + " | "
+								+ rc.getString("STATUS"));
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+
+			case 23:
+				System.out.print("Policy ID: ");
+				int pid = sc.nextInt();
+				sc.nextLine();
+
+				System.out.print("Policy Name: ");
+				String pname = sc.nextLine();
+
+				System.out.print("Policy Value: ");
+				String pvalue = sc.nextLine();
+
+				boolean pol = systemService.addPolicy(pid, pname, pvalue);
+
+				System.out.println(pol ? "Policy added" : "Failed");
+				break;
+
+			case 24:
+				try {
+					ResultSet pr = systemService.viewPolicies();
+
+					System.out.println("ID | NAME | VALUE");
+
+					while (pr.next()) {
+						System.out.println(pr.getInt("POLICY_ID") + " | "
+								+ pr.getString("POLICY_NAME") + " | "
+								+ pr.getString("POLICY_VALUE"));
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+				
+			case 25:
+			    sc.nextLine();
+
+			    System.out.print("Enter announcement message: ");
+			    String msg = sc.nextLine();
+
+			    boolean sent = employeeService.postAnnouncement(msg);
+
+			    System.out.println(sent ? "Announcement sent to all users" : "Failed");
+			    break;
+
 
 			case 0:
 				System.out.println("Logged out.");

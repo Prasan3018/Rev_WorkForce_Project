@@ -1,8 +1,11 @@
 package com.revworkforce.menu;
 
 import java.sql.ResultSet;
+
 import java.util.Scanner;
 import com.revworkforce.service.ManagerService;
+import com.revworkforce.util.SessionUtil;
+
 
 import com.revworkforce.model.Employee;
 
@@ -15,6 +18,14 @@ public class ManagerMenu {
 		Scanner sc = new Scanner(System.in);
 
 		while (true) {
+			
+			    if(SessionUtil.isSessionExpired()){
+			        System.out.println("Session expired due to inactivity.");
+			        return;
+			    }
+
+			    SessionUtil.updateActivity();
+
 
 			System.out.println("\n===== Manager Menu =====");
 			System.out.println("1. View Pending Leave Requests");
@@ -467,8 +478,11 @@ public class ManagerMenu {
 			}
 
 			case 0:
-				System.out.println("Logged out.");
-				return;
+			    new com.revworkforce.service.EmployeeService()
+			            .logAction(manager.getEmpId(), "User logged out");
+			    System.out.println("Logged out.");
+			    return;
+
 
 			default:
 				System.out.println("Invalid choice.");

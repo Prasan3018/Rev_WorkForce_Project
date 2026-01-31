@@ -103,3 +103,45 @@
 2026-01-31 18:27:14 INFO  RevWorkForceApp - Login successful for ID: 1002
 2026-01-31 18:27:14 INFO  RevWorkForceApp - Role detected: employee
 2026-01-31 18:27:22 INFO  RevWorkForceApp - Application closed by user
+2026-01-31 20:45:56 INFO  RevWorkForceApp - Application started
+2026-01-31 20:46:32 INFO  RevWorkForceApp - Login successful for ID: 1001
+2026-01-31 20:46:32 INFO  RevWorkForceApp - Role detected: EMPLOYEE
+2026-01-31 21:01:47 INFO  RevWorkForceApp - Application closed by user
+2026-02-01 00:14:16 INFO  RevWorkForceApp - Application started
+2026-02-01 00:14:31 INFO  RevWorkForceApp - Login successful for ID: 9001
+2026-02-01 00:14:31 INFO  RevWorkForceApp - Role detected: ADMIN
+2026-02-01 00:15:44 INFO  RevWorkForceApp - Login successful for ID: 1001
+2026-02-01 00:15:44 INFO  RevWorkForceApp - Role detected: EMPLOYEE
+2026-02-01 00:24:39 INFO  RevWorkForceApp - Application started
+2026-02-01 00:24:55 INFO  RevWorkForceApp - Login successful for ID: 1001
+2026-02-01 00:24:55 INFO  RevWorkForceApp - Role detected: EMPLOYEE
+2026-02-01 00:32:18 INFO  RevWorkForceApp - Application started
+2026-02-01 00:32:33 WARN  RevWorkForceApp - Invalid login attempt for ID: 1001
+2026-02-01 00:41:06 INFO  RevWorkForceApp - Application closed by user
+2026-02-01 00:41:14 INFO  RevWorkForceApp - Application started
+2026-02-01 00:41:21 INFO  RevWorkForceApp - Application started
+2026-02-01 00:47:39 INFO  RevWorkForceApp - Application started
+2026-02-01 00:47:57 WARN  RevWorkForceApp - Invalid login attempt for ID: 1001
+2026-02-01 00:55:27 INFO  RevWorkForceApp - Application started
+2026-02-01 00:55:40 WARN  RevWorkForceApp - Invalid login attempt for ID: 1001
+2026-02-01 00:56:10 INFO  RevWorkForceApp - Application started
+2026-02-01 00:56:18 WARN  RevWorkForceApp - Invalid login attempt for ID: 1001
+2026-02-01 00:56:50 INFO  RevWorkForceApp - Application started
+2026-02-01 00:57:04 WARN  RevWorkForceApp - Invalid login attempt for ID: 2001
+2026-02-01 01:04:44 INFO  RevWorkForceApp - Application started
+2026-02-01 01:04:54 INFO  RevWorkForceApp - Login successful for ID: 1001
+2026-02-01 01:04:54 INFO  RevWorkForceApp - Role detected: EMPLOYEE
+2026-02-01 01:05:18 INFO  RevWorkForceApp - Login successful for ID: 2001
+2026-02-01 01:05:18 INFO  RevWorkForceApp - Role detected: MANAGER
+2026-02-01 01:08:06 INFO  RevWorkForceApp - Application started
+2026-02-01 01:08:22 INFO  RevWorkForceApp - Login successful for ID: 1001
+2026-02-01 01:08:22 INFO  RevWorkForceApp - Role detected: EMPLOYEE
+2026-02-01 01:09:07 INFO  LeaveDAO - Leave applied by: 1001
+2026-02-01 01:09:24 INFO  RevWorkForceApp - Login successful for ID: 2001
+2026-02-01 01:09:24 INFO  RevWorkForceApp - Role detected: MANAGER
+2026-02-01 01:10:04 INFO  LeaveDAO - Leave applied by: 1001
+2026-02-01 01:10:56 INFO  RevWorkForceApp - Application started
+2026-02-01 01:11:05 INFO  RevWorkForceApp - Login successful for ID: 1001
+2026-02-01 01:11:05 INFO  RevWorkForceApp - Role detected: EMPLOYEE
+2026-02-01 01:11:17 INFO  RevWorkForceApp - Login successful for ID: 2001
+2026-02-01 01:11:17 INFO  RevWorkForceApp - Role detected: MANAGER

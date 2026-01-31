@@ -694,5 +694,99 @@ public class LeaveDAO {
 
 		return rs;
 	}
+	public int getUnreadNotificationCount(int empId) {
+
+	    int count = 0;
+
+	    try {
+	        Connection con = DBConnection.getConnection();
+
+	        PreparedStatement ps = con.prepareStatement(
+	            "SELECT COUNT(*) FROM NOTIFICATIONS WHERE EMP_ID=? AND STATUS='UNREAD'"
+	        );
+
+	        ps.setInt(1, empId);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            count = rs.getInt(1);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return count;
+	}
+	public void markNotificationsAsRead(int empId) {
+
+	    try {
+	        Connection con = DBConnection.getConnection();
+
+	        PreparedStatement ps = con.prepareStatement(
+	            "UPDATE NOTIFICATIONS SET STATUS='READ' WHERE EMP_ID=?"
+	        );
+
+	        ps.setInt(1, empId);
+	        ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public void markNotificationsRead(int empId) {
+
+	    try {
+	        Connection con = DBConnection.getConnection();
+
+	        PreparedStatement ps = con.prepareStatement(
+	            "UPDATE NOTIFICATIONS SET STATUS='READ' WHERE EMP_ID=?"
+	        );
+
+	        ps.setInt(1, empId);
+
+	        ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public boolean addAnnouncement(String message) {
+
+	    try {
+	        Connection con = DBConnection.getConnection();
+
+	        PreparedStatement ps = con.prepareStatement(
+	            "INSERT INTO ANNOUNCEMENTS VALUES (ANNOUNCE_SEQ.NEXTVAL, ?, SYSDATE)"
+	        );
+
+	        ps.setString(1, message);
+	        ps.executeUpdate();
+
+	        // Send to all employees
+	        PreparedStatement ps2 = con.prepareStatement(
+	            "SELECT EMP_ID FROM EMPLOYEE WHERE STATUS='ACTIVE'"
+	        );
+
+	        ResultSet rs = ps2.executeQuery();
+
+	        while(rs.next()){
+	            addNotification(rs.getInt("EMP_ID"),
+	                "System Announcement: " + message);
+	        }
+
+	        return true;
+
+	    } catch(Exception e){
+	        e.printStackTrace();
+	    }
+
+	    return false;
+	}
+
+
 
 }

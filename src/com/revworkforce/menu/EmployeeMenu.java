@@ -1,8 +1,9 @@
 package com.revworkforce.menu;
 
+import com.revworkforce.util.SessionUtil;
+
 import java.util.Scanner;
 import com.revworkforce.util.InputUtil;
-
 
 import com.revworkforce.model.Employee;
 import com.revworkforce.service.EmployeeService;
@@ -16,6 +17,14 @@ public class EmployeeMenu {
 		Scanner sc = new Scanner(System.in);
 
 		while (true) {
+
+			if (SessionUtil.isSessionExpired()) {
+				System.out.println("Session expired due to inactivity.");
+				return;
+			}
+
+			SessionUtil.updateActivity();
+
 			System.out.println("\n===== Employee Menu =====");
 			System.out.println("1. View Profile");
 			System.out.println("2. Edit Profile");
@@ -32,7 +41,6 @@ public class EmployeeMenu {
 			System.out.println("13. View Goals");
 			System.out.println("14. Update Goal Progress");
 			System.out.println("15. Change Password");
-
 
 			System.out.println("0. Logout");
 			System.out.print("Enter choice: ");
@@ -122,6 +130,8 @@ public class EmployeeMenu {
 				if (applied) {
 					System.out
 							.println("Leave applied successfully. Status: PENDING");
+					employeeService.logAction(emp.getEmpId(), "Applied leave");
+
 				} else {
 					System.out.println("Leave application failed.");
 				}
@@ -263,6 +273,8 @@ public class EmployeeMenu {
 					if (!found) {
 						System.out.println("No notifications.");
 					}
+
+					employeeService.markNotificationsRead(emp.getEmpId());
 
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -426,32 +438,35 @@ public class EmployeeMenu {
 
 				break;
 			}
-			
+
 			case 15: {
 
-			    String oldPass = InputUtil.getString(sc, "Enter current password: ");
-			    String newPass = InputUtil.getString(sc, "Enter new password: ");
-			    String confirm = InputUtil.getString(sc, "Confirm new password: ");
+				String oldPass = InputUtil.getString(sc,
+						"Enter current password: ");
+				String newPass = InputUtil
+						.getString(sc, "Enter new password: ");
+				String confirm = InputUtil.getString(sc,
+						"Confirm new password: ");
 
-			    if (!newPass.equals(confirm)) {
-			        System.out.println("Passwords do not match!");
-			        break;
-			    }
+				if (!newPass.equals(confirm)) {
+					System.out.println("Passwords do not match!");
+					break;
+				}
 
-			    boolean changed = employeeService.changePassword(
-			            emp.getEmpId(), oldPass, newPass);
+				boolean changed = employeeService.changePassword(
+						emp.getEmpId(), oldPass, newPass);
 
-			    if (changed) {
-			        System.out.println("Password changed successfully.");
-			    } else {
-			        System.out.println("Wrong current password.");
-			    }
+				if (changed) {
+					System.out.println("Password changed successfully.");
+				} else {
+					System.out.println("Wrong current password.");
+				}
 
-			    break;
+				break;
 			}
 
-
 			case 0:
+				employeeService.logAction(emp.getEmpId(), "User logged out");
 				System.out.println("Logged out successfully.");
 				return;
 
