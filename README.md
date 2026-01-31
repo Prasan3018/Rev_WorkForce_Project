@@ -1,37 +1,57 @@
-📘 RevWorkForce – Console Based HRM System
-📌 Application Overview
+Got it 👍 — **one single README file**, nothing “separate”, nothing implied.
+Below is **ONE COMPLETE `README.md` FILE** containing **everything inline**.
+You copy → paste → commit. It will render **perfectly aligned on GitHub**.
 
-RevWorkForce is a Java console-based Human Resource Management (HRM) system designed to manage employees, leaves, performance reviews, notifications, and system configurations.
+---
 
-The application follows a layered architecture:
+# 📘 RevWorkForce – Console Based HRM System
 
-DAO Layer – Database operations
+RevWorkForce is a **Java console-based Human Resource Management (HRM) system** built to manage employees, leave workflows, performance reviews, notifications, and system configurations in an enterprise-like environment.
 
-Service Layer – Business logic
+The project is designed using a **layered architecture**, ensuring clean separation of concerns, maintainability, and scalability for future web or microservices-based expansion.
 
-Menu Layer – User interaction
+---
 
-Model Layer – Entity objects
+## 📌 Application Overview
 
-Utility Layer – DB connection & input handling
+RevWorkForce provides **role-based access control** for the following roles:
 
-The system supports three roles:
+* 👤 **Employee**
+* 👔 **Manager**
+* 🛡️ **Admin**
 
-✔ Employee
-✔ Manager
-✔ Admin
+Each role has clearly defined permissions and business responsibilities.
 
-🛠️ Technologies Used
-Technology	Purpose
-Java 7	Core application
-JDBC	Database connectivity
-Oracle 10g	Database
-JUnit 4	Unit testing
-Log4j 2	Logging
-Eclipse Indigo	IDE
+---
 
+## 🧱 Architecture Design
 
-📂 Project Structure
+The application follows a **Layered Architecture** model:
+
+* **DAO Layer** – Handles all database operations and SQL queries
+* **Service Layer** – Implements business logic and validations
+* **Menu Layer** – Manages console-based user interaction
+* **Model Layer** – Contains entity and POJO classes
+* **Utility Layer** – Provides database connection and input handling
+
+---
+
+## 🛠️ Technologies Used
+
+| Technology     | Purpose                      |
+| -------------- | ---------------------------- |
+| Java 7         | Core application development |
+| JDBC           | Database connectivity        |
+| Oracle 10g     | Relational database          |
+| JUnit 4        | Unit testing                 |
+| Log4j 2        | Logging framework            |
+| Eclipse Indigo | Development IDE              |
+
+---
+
+## 📂 Complete Project Structure (Single View)
+
+```
 RevWorkForce
 │
 ├── src
@@ -74,211 +94,196 @@ RevWorkForce
 │   └── log4j2.xml
 │
 ├── logs
-│   ├── app.log
-│   ├── ERD.png
-│   └── README.md
+│   └── app.log
 │
+├── ERD.png
+├── README.md
 └── JUnit 4
+```
 
-👨‍💼 Employee Features
-🔐 Authentication & Profile
+---
 
-Login using Employee ID or Email + Password
+## 👨‍💼 Employee Features
 
-Edit profile (phone, address, emergency contact)
+### 🔐 Authentication & Profile Management
 
-View reporting manager details
+* Login using **Employee ID or Email with Password**
+* Edit profile details (phone, address, emergency contact)
+* View reporting manager information
+* Change password
+* Forgot password using security question and answer
 
-Change password
+### 📅 Leave Management
 
-Forgot password using security question
+* View leave balances (CL, SL, PL, PRL)
+* Apply leave with reason and date range
+* View applied leave status
+* Cancel pending leave requests
+* View company holiday calendar
+* Receive leave approval or rejection notifications
 
-📅 Leave Management
+### 📈 Performance Management
 
-View leave balance (CL, SL, PL, PRL)
+* Submit performance reviews
+* Create yearly goals
+* Update goal progress
+* View manager feedback and ratings
 
-Apply leave with reason & date range
+### 🔔 Notification System
 
-View applied leaves with status
+* In-app notifications stored in the database
+* Unread notification count displayed at login
+* Notification categories:
 
-Cancel pending leave
+  * Leave status updates
+  * Performance feedback
+  * Company announcements
 
-View holiday calendar
+---
 
-Receive leave approval/rejection notifications
+## 👔 Manager Features
 
-📈 Performance Management
+*(Includes all Employee features plus)*
 
-Submit performance review
+* View direct reportees
+* Approve or reject employee leave requests
+* View team leave calendar
+* Review performance submissions
+* Provide feedback and ratings
+* Track team goals
+* Generate team-level reports
 
-Add yearly goals
+---
 
-Update goal progress
+## 🛡️ Admin Features
 
-View manager feedback
+### 👥 Employee Management
 
-🔔 Notifications
+* Add new employees
+* Update employee details
+* Activate or deactivate employee accounts
+* Change reporting managers
+* Search employees
 
-In-app notifications stored in DB
+### 📋 Leave Management
 
-Unread count shown at login
+* Configure leave policies
+* Assign leave quotas
+* Adjust leave balances
+* Revoke leaves
+* Generate leave reports
 
-Notifications include:
+### ⚙️ System Configuration
 
-Leave status
+* Manage departments and designations
+* Define performance cycles
+* Configure HR policies
+* Maintain audit logs
 
-Performance feedback
+---
 
-Announcements
+## 🔐 Security & Session Management
 
-👔 Manager Features
+* Secure login validation
+* Password change functionality
+* Forgot password via security Q&A
+* Status-based access control (ACTIVE / INACTIVE users)
 
-(All employee features +)
+---
 
-View direct reportees
+## 📊 Logging
 
-Approve/Reject leave requests
+Logging is implemented using **Log4j 2**.
 
-View team leave calendar
+* Log file location: `logs/app.log`
+* Logs capture:
 
-Review performance documents
+  * User login activities
+  * User actions
+  * Errors and exceptions
+  * System-level events
 
-Provide feedback & ratings
+---
 
-Track team goals
+## 🧪 Testing
 
-Team reports
+The project includes **JUnit 4 test cases**:
 
-🛡️ Admin Features
-👥 Employee Management
+* EmployeeDAOTest
+* LeaveDAOTest
+* EmployeeServiceTest
 
-Add employee
+✔ Core DAO and service methods tested
+✔ Functional and validation logic covered
 
-Update employee details
+---
 
-Activate/Deactivate accounts
+## 📈 Database Design
 
-Change reporting managers
+The application uses **Oracle 10g** with the following tables:
 
-Search employees
+* EMPLOYEE
+* LEAVE_BALANCE
+* LEAVE_REQUEST
+* NOTIFICATION
+* PERFORMANCE_REVIEW
+* GOALS
+* HOLIDAY
+* LEAVE_POLICY
+* AUDIT_LOG
 
-📋 Leave Management
+Entity relationships are documented in **ERD.png**.
 
-Configure leave policies
+---
 
-Assign leave quotas
+## ▶ How to Run the Application
 
-Adjust balances
+1. Open the project in **Eclipse**
+2. Ensure the following:
 
-Revoke leaves
+   * Oracle database is running
+   * JDBC driver JAR is added
+   * Log4j 2 JAR files are added
+3. Run the application:
 
-Generate reports
+   ```
+   RevWorkForceApp.java
+   ```
 
-⚙️ System Configuration
+---
 
-Departments & designations
+## 📎 Deliverables
 
-Performance cycles
+* Complete source code
+* ERD diagram
+* README documentation
+* Unit test cases
+* Logging configuration
 
-Policies
+---
 
-Audit logs
+## 🚀 Future Enhancements
 
-🔐 Security & Session
+* Web-based user interface
+* Microservices architecture
+* RESTful APIs
+* Role-based dashboards
 
-✔ Login validation
-✔ Password change
-✔ Forgot password via security Q&A
-✔ Status based access (ACTIVE/INACTIVE)
+---
 
-📊 Logging
+## 👨‍💻 Developed By
 
-Implemented using Log4j 2
+**Prasanna Kumar S**
+RevWorkForce – HRM System
 
-Logs stored in logs/app.log
+---
 
-Tracks:
+This is now a **single, self-contained README file**.
+If you want, next I can:
 
-Logins
+* Optimize wording for **resume / interviews**
+* Add **GitHub badges**
+* Make a **one-paragraph project summary**
+* Review it as an **interviewer**
 
-Actions
-
-Errors
-
-System events
-
-🧪 Testing
-
-JUnit 4 test cases:
-
-EmployeeDAOTest
-
-LeaveDAOTest
-
-EmployeeServiceTest
-
-✔ Core methods tested
-✔ Functional validations
-
-📈 Database
-
-Oracle 10g used with tables including:
-
-EMPLOYEE
-
-LEAVE_BALANCE
-
-LEAVE_REQUEST
-
-NOTIFICATION
-
-PERFORMANCE_REVIEW
-
-GOALS
-
-HOLIDAY
-
-LEAVE_POLICY
-
-AUDIT_LOG
-
-(Refer ERD.png for relationships)
-
-▶ How to Run
-
-Open project in Eclipse
-
-Ensure:
-
-Oracle DB running
-
-JDBC jar added
-
-Log4j jars added
-
-Run:
-
-RevWorkForceApp.java
-
-📎 Deliverables
-
-✔ Complete Source Code
-✔ ERD Diagram (ERD.png)
-✔ README.md
-✔ Unit Tests
-✔ Logging Configuration
-
-📌 Future Enhancements
-
-Web-based UI
-
-Microservices architecture
-
-REST APIs
-
-Role-based dashboards
-
-👨‍💻 Developed By
-
-Prasanna Kumar S
-RevWorkForce HRM System
+Just tell me.
